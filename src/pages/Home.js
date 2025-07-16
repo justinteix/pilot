@@ -2,82 +2,61 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TrendingUp, Star, Calendar, ChevronRight, Film } from "lucide-react";
 import MovieCard from "../components/MovieCard";
+import { movieApi, tvApi, searchApi } from "../services/tmdbApi";
 import "./Home.css";
 
-const Home = ({ searchQuery }) => {
+const Home = ({ searchQuery, onAuthRequired }) => {
   const [searchParams] = useSearchParams();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("trending");
+  const [error, setError] = useState("");
 
-  // Mock data for demonstration
-  const mockMovies = [
-    {
-      id: 1,
-      title: "The Dark Knight",
-      poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-      release_date: "2008-07-18",
-      vote_average: 9.0,
-      genre_ids: [28, 80, 18],
-    },
-    {
-      id: 2,
-      title: "Inception",
-      poster_path: "/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
-      release_date: "2010-07-16",
-      vote_average: 8.8,
-      genre_ids: [28, 878, 53],
-    },
-    {
-      id: 3,
-      title: "Interstellar",
-      poster_path: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-      release_date: "2014-11-07",
-      vote_average: 8.6,
-      genre_ids: [18, 878],
-    },
-    {
-      id: 4,
-      title: "The Matrix",
-      poster_path: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
-      release_date: "1999-03-31",
-      vote_average: 8.7,
-      genre_ids: [28, 878],
-    },
-    {
-      id: 5,
-      title: "Pulp Fiction",
-      poster_path: "/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
-      release_date: "1994-10-14",
-      vote_average: 8.9,
-      genre_ids: [80, 18],
-    },
-    {
-      id: 6,
-      title: "The Shawshank Redemption",
-      poster_path: "/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-      release_date: "1994-09-23",
-      vote_average: 9.3,
-      genre_ids: [18],
-    },
-  ];
+  const mediaType = searchParams.get("type") || "movie";
 
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    setTimeout(() => {
-      let filteredMovies = [...mockMovies];
-
-      if (searchQuery) {
-        filteredMovies = mockMovies.filter((movie) =>
-          movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+    const fetchMovies = async () => {
+      setLoading(true);
+      setError("");
+      
+      try {
+        let response;
+        
+        if (searchQuery) {
+          // Search for movies/TV shows
+          response = await searchApi.multi(searchQuery);
+        } else {
+          // Fetch based on active filter and media type
+          switch (activeFilter) {
+            case "popular":
+              response = mediaType === "tv" ? await tvApi.getPopular() : await movieApi.getPopular();
+              break;
+            case "recent":
+              response = mediaType === "tv" ? await tvApi.getTopRated() : await movieApi.getNowPlaying();
+              break;
+            default: // trending
+              response = mediaType === "tv" ? await tvApi.getTrending() : await movieApi.getTrending();
+          }
+        }
+        
+        // Add media_type to items that don't have it
+        const moviesWithType = response.data.results.map(item => ({
+          ...item,
+          media_type: item.media_type || (item.title ? 'movie' : 'tv')
+        }));
+        
+        setMovies(moviesWithType);
+      } catch (err) {
+        console.error("Error fetching movies:", err);
+        setError("Failed to load content. Please check your API configuration.");
+        setMovies([]);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setMovies(filteredMovies);
-      setLoading(false);
-    }, 1000);
-  }, [searchQuery, activeFilter]);
+    fetchMovies();
+  }, [searchQuery, activeFilter, mediaType]);
 
   const filters = [
     { id: "trending", label: "Trending", icon: TrendingUp },
@@ -121,9 +100,9 @@ const Home = ({ searchQuery }) => {
                 : "Trending Now"}
             </h2>
             {!searchQuery && (
-              <a href="#" className="view-all-btn">
+              <button className="view-all-btn" onClick={() => {}}>
                 View All <ChevronRight size={16} />
-              </a>
+              </button>
             )}
           </div>
 
@@ -147,10 +126,16 @@ const Home = ({ searchQuery }) => {
             </div>
           )}
 
-          {movies.length > 0 ? (
+          {error ? (
+            <div className="error-message">{error}</div>
+          ) : movies.length > 0 ? (
             <div className="movies-grid">
               {movies.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
+                <MovieCard 
+                  key={`${movie.id}-${movie.media_type}`} 
+                  movie={movie} 
+                  onAuthRequired={onAuthRequired}
+                />
               ))}
             </div>
           ) : (

@@ -1,6 +1,6 @@
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  signInWithEmailAndPassword as firebaseSignIn,
   signOut,
   updateProfile,
   GoogleAuthProvider,
@@ -63,7 +63,7 @@ export const signUpWithEmailAndPassword = async (email, password, displayName) =
 // Sign in with email and password
 export const signInWithEmailAndPassword = async (email, password) => {
   try {
-    const { user } = await signInWithEmailAndPassword(auth, email, password);
+    const { user } = await firebaseSignIn(auth, email, password);
     return user;
   } catch (error) {
     console.error('Error signing in:', error);

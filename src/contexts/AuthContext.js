@@ -19,6 +19,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If Firebase is not configured, just set loading to false
+    if (!auth) {
+      console.warn('Firebase auth not available. Running in demo mode.');
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       

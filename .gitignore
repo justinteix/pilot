@@ -103,3 +103,5 @@ firestore-debug.log
 
 # Local development
 .vercel
+node_modules
+node_modules

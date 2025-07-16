@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, Film, Tv, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { signOutUser } from '../services/authService';
+import PilotLogo from './PilotLogo';
 import './Header.css';
 
 const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
@@ -30,7 +31,7 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
       <div className="container">
         <div className="header-content">
           <Link to="/" className="logo">
-            <Film className="logo-icon" />
+            <PilotLogo width={32} height={21} className="logo-icon" />
             <span>Pilot</span>
           </Link>
 

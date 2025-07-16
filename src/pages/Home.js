@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TrendingUp, Star, Calendar, ChevronRight, Film } from "lucide-react";
 import MovieCard from "../components/MovieCard";
+import PilotLogo from "../components/PilotLogo";
 import { movieApi, tvApi, searchApi } from "../services/tmdbApi";
 import "./Home.css";
 
@@ -80,7 +81,7 @@ const Home = ({ searchQuery, onAuthRequired }) => {
         {!searchQuery && (
           <div className="hero-section">
             <div className="hero-logo">
-              <Film className="hero-logo-icon" />
+              <PilotLogo width={48} height={32} className="hero-logo-icon" />
               <h1 className="hero-logo-text">Pilot</h1>
             </div>
             <h2 className="hero-title">Track Your Entertainment</h2>

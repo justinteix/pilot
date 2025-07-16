@@ -1,0 +1,26 @@
+.pilot-logo {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.pilot-logo:hover {
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+/* Specific styling for different contexts */
+.hero-logo-svg {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.logo-icon {
+  margin-right: 8px;
+}
+
+.profile-logo {
+  margin-bottom: 16px;
+}
+
+.movie-detail-logo {
+  opacity: 0.9;
+}

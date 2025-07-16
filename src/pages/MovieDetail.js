@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Calendar, Clock, Play, Plus, Check, Heart } from 'lucide-react';
+import PilotLogo from '../components/PilotLogo';
 import './MovieDetail.css';
 
 const MovieDetail = () => {
@@ -88,10 +89,15 @@ const MovieDetail = () => {
       >
         <div className="hero-overlay">
           <div className="container">
-            <button className="back-btn" onClick={() => navigate(-1)}>
-              <ArrowLeft size={20} />
-              Back
-            </button>
+            <div className="movie-detail-header">
+              <button className="back-btn" onClick={() => navigate(-1)}>
+                <ArrowLeft size={20} />
+                Back
+              </button>
+              <div className="movie-detail-logo">
+                <PilotLogo width={32} height={21} />
+              </div>
+            </div>
             
             <div className="hero-content">
               <div className="movie-poster-large">

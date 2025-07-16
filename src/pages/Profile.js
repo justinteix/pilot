@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Film, Tv, Star, Calendar, TrendingUp, Heart } from 'lucide-react';
 import MovieCard from '../components/MovieCard';
+import PilotLogo from '../components/PilotLogo';
 import './Profile.css';
 
 const Profile = () => {
@@ -110,6 +111,9 @@ const Profile = () => {
     <div className="profile">
       <div className="container">
         <div className="profile-header">
+          <div className="profile-brand">
+            <PilotLogo width={40} height={26} className="profile-logo" />
+          </div>
           <div className="profile-avatar">
             <User size={40} />
           </div>

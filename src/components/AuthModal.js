@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { signUpWithEmailAndPassword, signInWithEmailAndPassword, signInWithGoogle } from '../services/authService';
 import './AuthModal.css';
@@ -8,12 +8,24 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    displayName: '',
+    username: '',
     confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Update mode when initialMode prop changes
+  useEffect(() => {
+    setMode(initialMode);
+    setError('');
+    setFormData({
+      email: '',
+      password: '',
+      username: '',
+      confirmPassword: ''
+    });
+  }, [initialMode]);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -21,6 +33,29 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
       [e.target.name]: e.target.value
     });
     setError('');
+  };
+
+  const getErrorMessage = (error) => {
+    const errorCode = error.code;
+    
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        return 'This email is already registered. Try signing in instead.';
+      case 'auth/weak-password':
+        return 'Password is too weak. Please use at least 6 characters.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/user-not-found':
+        return 'No account found with this email. Try signing up instead.';
+      case 'auth/wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'auth/invalid-credential':
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 'auth/too-many-requests':
+        return 'Too many failed attempts. Please try again later.';
+      default:
+        return error.message || 'An error occurred. Please try again.';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -36,13 +71,13 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
         if (formData.password.length < 6) {
           throw new Error('Password must be at least 6 characters');
         }
-        await signUpWithEmailAndPassword(formData.email, formData.password, formData.displayName);
+        await signUpWithEmailAndPassword(formData.email, formData.password, formData.username);
       } else {
         await signInWithEmailAndPassword(formData.email, formData.password);
       }
       onClose();
     } catch (error) {
-      setError(error.message);
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -68,7 +103,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
     setFormData({
       email: '',
       password: '',
-      displayName: '',
+      username: '',
       confirmPassword: ''
     });
   };
@@ -101,9 +136,9 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
                 <User className="input-icon" size={20} />
                 <input
                   type="text"
-                  name="displayName"
-                  placeholder="Full Name"
-                  value={formData.displayName}
+                  name="username"
+                  placeholder="Username"
+                  value={formData.username}
                   onChange={handleInputChange}
                   required
                 />

@@ -1,0 +1,146 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #333;
+  z-index: 1000;
+  height: 80px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  gap: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.logo:hover {
+  color: #ff6b6b;
+}
+
+.logo-icon {
+  color: #ff6b6b;
+}
+
+.nav {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #ccc;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.search-form {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #666;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #333;
+  border-radius: 25px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #ff6b6b;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #ccc;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.profile-link:hover {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    gap: 15px;
+  }
+  
+  .nav {
+    display: none;
+  }
+  
+  .search-form {
+    max-width: 250px;
+  }
+  
+  .logo span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-form {
+    max-width: 200px;
+  }
+  
+  .search-input {
+    font-size: 12px;
+    padding: 10px 10px 10px 35px;
+  }
+}

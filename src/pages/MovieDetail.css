@@ -1,0 +1,296 @@
+.movie-detail {
+  padding-top: 0;
+}
+
+.hero-backdrop {
+  position: relative;
+  min-height: 70vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(15, 15, 15, 0.95) 100%
+  );
+  min-height: 70vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 40px 0;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.back-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.hero-content {
+  display: flex;
+  gap: 40px;
+  align-items: flex-end;
+}
+
+.movie-poster-large {
+  flex-shrink: 0;
+}
+
+.poster-image {
+  width: 300px;
+  height: 450px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.movie-details {
+  flex: 1;
+  color: #fff;
+}
+
+.movie-title {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+
+.movie-meta {
+  display: flex;
+  gap: 25px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ccc;
+  font-size: 16px;
+}
+
+.meta-item.rating {
+  color: #ffd700;
+  font-weight: 500;
+}
+
+.genres {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.genre-tag {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.movie-overview {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #ddd;
+  margin-bottom: 30px;
+  max-width: 800px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #ff6b6b;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #ff5252;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover,
+.btn-secondary.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-icon {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-icon:hover,
+.btn-icon.liked {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.user-rating h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 5px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.star-btn:hover,
+.star-btn.active {
+  color: #ffd700;
+}
+
+.cast-section {
+  padding: 60px 0;
+}
+
+.cast-section h2 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #fff;
+}
+
+.cast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.cast-member {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cast-avatar {
+  width: 50px;
+  height: 50px;
+  background: #ff6b6b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.cast-name {
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.cast-character {
+  color: #999;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .poster-image {
+    width: 250px;
+    height: 375px;
+  }
+  
+  .movie-title {
+    font-size: 36px;
+  }
+  
+  .movie-meta {
+    justify-content: center;
+  }
+  
+  .action-buttons {
+    justify-content: center;
+  }
+  
+  .cast-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .poster-image {
+    width: 200px;
+    height: 300px;
+  }
+  
+  .movie-title {
+    font-size: 28px;
+  }
+  
+  .movie-overview {
+    font-size: 16px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}

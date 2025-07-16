@@ -19,7 +19,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
         <div className="header-content">
           <Link to="/" className="logo">
             <Film className="logo-icon" />
-            <span>WatchList</span>
+            <span>Pilot</span>
           </Link>
 
           <nav className="nav">

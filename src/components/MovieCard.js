@@ -1,35 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Plus, Check } from 'lucide-react';
+import { Star, Plus, Check, Heart } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, checkItemStatus } from '../services/userDataService';
+import { getImageUrl } from '../services/tmdbApi';
 import './MovieCard.css';
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, onAuthRequired }) => {
   const navigate = useNavigate();
-  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const { currentUser, userProfile, setUserProfile } = useAuth();
+  const [itemStatus, setItemStatus] = useState({
+    inWatchlist: false,
+    inFavorites: false,
+    rating: 0,
+    isWatched: false
+  });
+  const [loading, setLoading] = useState(false);
+
+  const mediaType = movie.media_type || (movie.title ? 'movie' : 'tv');
+
+  useEffect(() => {
+    if (userProfile) {
+      const status = checkItemStatus(userProfile, movie.id, mediaType);
+      setItemStatus(status);
+    }
+  }, [userProfile, movie.id, mediaType]);
 
   const handleCardClick = () => {
-    navigate(`/movie/${movie.id}`);
+    const path = mediaType === 'movie' ? `/movie/${movie.id}` : `/tv/${movie.id}`;
+    navigate(path);
   };
 
-  const handleWatchlistClick = (e) => {
+  const handleWatchlistClick = async (e) => {
     e.stopPropagation();
-    setIsInWatchlist(!isInWatchlist);
+    
+    if (!currentUser) {
+      onAuthRequired?.();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (itemStatus.inWatchlist) {
+        await removeFromWatchlist(currentUser.uid, movie.id, mediaType);
+      } else {
+        await addToWatchlist(currentUser.uid, movie);
+      }
+      
+      // Update local state
+      setItemStatus(prev => ({ ...prev, inWatchlist: !prev.inWatchlist }));
+      
+      // Refresh user profile
+      const { getUserProfile } = await import('../services/authService');
+      const updatedProfile = await getUserProfile(currentUser.uid);
+      setUserProfile(updatedProfile);
+    } catch (error) {
+      console.error('Error updating watchlist:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getPosterUrl = (posterPath) => {
-    if (!posterPath) return '/api/placeholder/300/450';
-    return `https://image.tmdb.org/t/p/w300${posterPath}`;
+  const handleFavoriteClick = async (e) => {
+    e.stopPropagation();
+    
+    if (!currentUser) {
+      onAuthRequired?.();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (itemStatus.inFavorites) {
+        await removeFromFavorites(currentUser.uid, movie.id, mediaType);
+      } else {
+        await addToFavorites(currentUser.uid, movie);
+      }
+      
+      // Update local state
+      setItemStatus(prev => ({ ...prev, inFavorites: !prev.inFavorites }));
+      
+      // Refresh user profile
+      const { getUserProfile } = await import('../services/authService');
+      const updatedProfile = await getUserProfile(currentUser.uid);
+      setUserProfile(updatedProfile);
+    } catch (error) {
+      console.error('Error updating favorites:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="movie-card" onClick={handleCardClick}>
-      <button 
-        className={`watchlist-btn ${isInWatchlist ? 'added' : ''}`}
-        onClick={handleWatchlistClick}
-        title={isInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
-      >
-        {isInWatchlist ? <Check size={16} /> : <Plus size={16} />}
-      </button>
+      <div className="card-actions">
+        <button 
+          className={`action-btn watchlist-btn ${itemStatus.inWatchlist ? 'added' : ''}`}
+          onClick={handleWatchlistClick}
+          disabled={loading}
+          title={itemStatus.inWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
+        >
+          {itemStatus.inWatchlist ? <Check size={16} /> : <Plus size={16} />}
+        </button>
+        
+        <button 
+          className={`action-btn favorite-btn ${itemStatus.inFavorites ? 'added' : ''}`}
+          onClick={handleFavoriteClick}
+          disabled={loading}
+          title={itemStatus.inFavorites ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          <Heart size={16} fill={itemStatus.inFavorites ? 'currentColor' : 'none'} />
+        </button>
+      </div>
 
       {movie.vote_average > 0 && (
         <div className="rating-overlay">
@@ -39,7 +121,7 @@ const MovieCard = ({ movie }) => {
       )}
 
       <img
-        src={getPosterUrl(movie.poster_path)}
+        src={getImageUrl(movie.poster_path)}
         alt={movie.title || movie.name}
         className="movie-poster"
         loading="lazy"
@@ -63,6 +145,12 @@ const MovieCard = ({ movie }) => {
             {getGenreName(movie.genre_ids[0])}
           </div>
         )}
+        {itemStatus.isWatched && (
+          <div className="watched-indicator">
+            <Check size={12} />
+            Watched
+          </div>
+        )}
       </div>
     </div>
   );
@@ -70,28 +158,21 @@ const MovieCard = ({ movie }) => {
 
 // Helper function to get genre name by ID
 const getGenreName = (genreId) => {
-  const genres = {
-    28: 'Action',
-    12: 'Adventure',
-    16: 'Animation',
-    35: 'Comedy',
-    80: 'Crime',
-    99: 'Documentary',
-    18: 'Drama',
-    10751: 'Family',
-    14: 'Fantasy',
-    36: 'History',
-    27: 'Horror',
-    10402: 'Music',
-    9648: 'Mystery',
-    10749: 'Romance',
-    878: 'Sci-Fi',
-    10770: 'TV Movie',
-    53: 'Thriller',
-    10752: 'War',
-    37: 'Western'
+  const movieGenres = {
+    28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime',
+    99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History',
+    27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-Fi',
+    10770: 'TV Movie', 53: 'Thriller', 10752: 'War', 37: 'Western'
   };
-  return genres[genreId] || 'Unknown';
+  
+  const tvGenres = {
+    10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime',
+    99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids',
+    9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy',
+    10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western'
+  };
+  
+  return movieGenres[genreId] || tvGenres[genreId] || 'Unknown';
 };
 
 export default MovieCard;

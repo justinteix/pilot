@@ -118,7 +118,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
         </button>
 
         <div className="auth-header">
-          <h2>{mode === 'signin' ? 'Welcome Back' : 'Join Pilot'}</h2>
+          <h2>{mode === 'signin' ? 'Welcome Back' : 'Create Account'}</h2>
           <p>
             {mode === 'signin' 
               ? 'Sign in to track your favorite movies and shows'

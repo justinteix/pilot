@@ -14,8 +14,6 @@
 }
 
 .profile-avatar {
-  width: 100px;
-  height: 100px;
   background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
   border-radius: 50%;
   display: flex;
@@ -30,10 +28,8 @@
 }
 
 .profile-name {
-  font-size: 36px;
-  font-weight: bold;
+  font-size: 24px;
   color: #fff;
-  margin-bottom: 8px;
 }
 
 .profile-username {

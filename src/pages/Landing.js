@@ -7,8 +7,10 @@ import {
   TrendingUp,
   Users,
   Shield,
+  MoveLeft,
 } from "lucide-react";
-import PilotLogo from "../components/PilotLogo";
+import PilotIcon from "../images/PilotIcon.svg";
+import PilotText from "../images/PilotText.svg";
 import "./Landing.css";
 
 const Landing = ({ onAuthClick }) => {
@@ -109,10 +111,17 @@ const Landing = ({ onAuthClick }) => {
           <div className="hero-content">
             <div className="hero-text">
               <div className="hero-logo">
-                <PilotLogo
-                  width={2400}
-                  height={1578}
-                  className="hero-logo-svg"
+                <img
+                  src={PilotIcon}
+                  height={100}
+                  width={100}
+                  alt="Icon"
+                />
+                <img
+                  src={PilotText}
+                  height={200}
+                  width={200}
+                  alt="Text"
                 />
               </div>
               <h2 className="hero-title">
@@ -128,7 +137,7 @@ const Landing = ({ onAuthClick }) => {
                   className="cta-button primary"
                   onClick={() => onAuthClick("signup")}
                 >
-                  Get Started Free
+                  Get Started
                 </button>
                 <button
                   className="cta-button secondary"
@@ -182,8 +191,8 @@ const Landing = ({ onAuthClick }) => {
               Everything You Need to Track Your Entertainment
             </h2>
             <p className="section-subtitle">
-              Pilot gives you all the tools to organize, discover, and enjoy
-              your favorite content.
+              All the tools you need to organize, discover, and enjoy your
+              favorite content.
             </p>
           </div>
 
@@ -234,13 +243,13 @@ const Landing = ({ onAuthClick }) => {
           <div className="cta-content">
             <h2 className="cta-title">Ready to Start Your Journey?</h2>
             <p className="cta-subtitle">
-              Join Pilot today and never lose track of what to watch next.
+              Never lose track of what to watch next.
             </p>
             <button
               className="cta-button primary large"
               onClick={() => onAuthClick("signup")}
             >
-              Create Your Free Account
+              Create Your Account
             </button>
             <p className="cta-note">
               Already have an account?

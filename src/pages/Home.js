@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { TrendingUp, Star, Calendar, ChevronRight, Film } from "lucide-react";
 import MovieCard from "../components/MovieCard";
 import PilotLogo from "../components/PilotLogo";
+import { useAuth } from "../contexts/AuthContext";
 import { movieApi, tvApi, searchApi } from "../services/tmdbApi";
 import "./Home.css";
 
@@ -12,6 +13,7 @@ const Home = ({ searchQuery, onAuthRequired }) => {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("trending");
   const [error, setError] = useState("");
+  const { currentUser, userProfile } = useAuth();
 
   const mediaType = searchParams.get("type") || "movie";
 
@@ -78,27 +80,19 @@ const Home = ({ searchQuery, onAuthRequired }) => {
   return (
     <div className="home">
       <div className="container">
-        {!searchQuery && (
-          <div className="hero-section">
-            <div className="hero-logo">
-              <PilotLogo width={48} height={32} className="hero-logo-icon" />
-              <h1 className="hero-logo-text">Pilot</h1>
-            </div>
-            <h2 className="hero-title">Track Your Entertainment</h2>
-            <p className="hero-subtitle">
-              Discover, rate, and keep track of all your favorite movies and TV
-              shows. Join a community of entertainment enthusiasts.
-            </p>
-          </div>
-        )}
+
 
         <div className="section">
           <div className="section-header">
             <h2 className="section-title">
-              <TrendingUp className="section-icon" />
-              {searchQuery
-                ? `Search Results for "${searchQuery}"`
-                : "Trending Now"}
+              {searchQuery ? (
+                <>
+                  <TrendingUp className="section-icon" />
+                  {`Search Results for "${searchQuery}"`}
+                </>
+              ) : (
+                `Welcome back, ${userProfile?.displayName || currentUser?.displayName || currentUser?.email?.split('@')[0] || 'User'}!`
+              )}
             </h2>
             {!searchQuery && (
               <button className="view-all-btn" onClick={() => {}}>

@@ -67,10 +67,11 @@
   color: #fff;
 }
 
-.movie-title {
+h1.movie-title {
   font-size: 48px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  margin-bottom: 30px;
   line-height: 1.1;
 }
 

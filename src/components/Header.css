@@ -1,45 +1,61 @@
+/* Modern Header Design - YouTube/Reddit Style */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(15, 15, 15, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid #333;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1000;
-  height: 80px;
+  height: 64px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 80px;
-  gap: 20px;
+  height: 64px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+  gap: 24px;
 }
 
+/* Seamless Logo Section - YouTube/Reddit Style */
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   text-decoration: none;
-  color: #fff;
-  font-size: 24px;
-  font-weight: bold;
-  transition: color 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  min-width: fit-content;
 }
 
 .logo:hover {
-  color: #ff6b6b;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .logo-icon {
-  color: #ff6b6b;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
+.logo-text {
+  height: 20px;
+  width: auto;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+/* Navigation */
 .nav {
   display: flex;
-  gap: 30px;
+  gap: 4px;
+  margin-left: 16px;
 }
 
 .nav-link {
@@ -47,88 +63,111 @@
   align-items: center;
   gap: 6px;
   text-decoration: none;
-  color: #ccc;
+  color: #e0e0e0;
   font-weight: 500;
-  transition: color 0.2s ease;
+  font-size: 14px;
+  transition: all 0.2s ease;
   padding: 8px 12px;
   border-radius: 8px;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
-  color: #fff;
+  color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
 }
 
+.nav-link.active {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Search Section - YouTube Style */
 .search-form {
   flex: 1;
-  max-width: 400px;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
 }
 
 .search-input-wrapper {
   position: relative;
   display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  color: #666;
-  z-index: 1;
+  width: 100%;
+  max-width: 540px;
 }
 
 .search-input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid #333;
-  border-radius: 25px;
+  height: 40px;
+  padding: 0 16px 0 40px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
   color: #fff;
   font-size: 14px;
   transition: all 0.2s ease;
 }
 
 .search-input::placeholder {
-  color: #666;
+  color: #aaa;
 }
 
 .search-input:focus {
   outline: none;
   border-color: #ff6b6b;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
 }
 
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  z-index: 2;
+  transition: color 0.2s ease;
+}
+
+.search-input:focus + .search-icon {
+  color: #ff6b6b;
+}
+
+/* Auth Section */
 .auth-section {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .auth-buttons {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .auth-btn {
   padding: 8px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 18px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .auth-btn.signin {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ccc;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .auth-btn.signin:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .auth-btn.signup {
@@ -141,25 +180,28 @@
   transform: translateY(-1px);
 }
 
+/* User Menu - Reddit Style */
 .user-menu {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .profile-link {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   text-decoration: none;
-  color: #ccc;
-  transition: color 0.2s ease;
-  padding: 6px 12px;
+  color: #e0e0e0;
+  transition: all 0.2s ease;
+  padding: 8px 12px;
   border-radius: 8px;
+  max-width: 200px;
+  min-height: 48px;
+  box-sizing: border-box;
 }
 
 .profile-link:hover {
-  color: #fff;
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -170,10 +212,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: 600;
   color: #fff;
   flex-shrink: 0;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .profile-avatar img {
@@ -183,25 +227,47 @@
   border-radius: 50%;
 }
 
-.profile-avatar:not(:has(img)) {
-  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1;
+  gap: 2px;
 }
 
 .profile-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-handle {
+  font-size: 11px;
+  font-weight: 400;
+  color: #aaa;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sign-out-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.1);
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.08);
   border: none;
-  border-radius: 8px;
-  color: #ccc;
+  border-radius: 6px;
+  color: #aaa;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -211,31 +277,86 @@
   color: #ff6b6b;
 }
 
-@media (max-width: 768px) {
+/* Responsive Design */
+@media (max-width: 1024px) {
   .header-content {
-    gap: 15px;
-  }
-  
-  .nav {
-    display: none;
+    gap: 16px;
   }
   
   .search-form {
-    max-width: 250px;
+    max-width: 400px;
   }
-  
-  .logo span {
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 0 12px;
+    gap: 12px;
+  }
+
+  .nav {
     display: none;
+  }
+
+  .search-form {
+    max-width: 300px;
+  }
+
+  .search-input {
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+  .auth-btn {
+    padding: 6px 12px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
+  .header-content {
+    padding: 0 8px;
+    gap: 8px;
+  }
+
+  .logo {
+    padding: 6px 8px;
+  }
+
+  .logo-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .logo-text {
+    height: 16px;
+  }
+
   .search-form {
     max-width: 200px;
   }
-  
+
   .search-input {
+    height: 32px;
+    padding: 0 12px 0 32px;
     font-size: 12px;
-    padding: 10px 10px 10px 35px;
+  }
+
+  .search-icon {
+    left: 10px;
+  }
+
+  .profile-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sign-out-btn {
+    width: 28px;
+    height: 28px;
   }
 }

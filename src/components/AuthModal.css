@@ -69,6 +69,18 @@
   text-align: center;
 }
 
+.success-message {
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid #28a745;
+  color: #28a745;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.4;
+}
+
 .auth-form {
   margin-bottom: 30px;
 }
@@ -124,6 +136,46 @@
 
 .password-toggle:hover {
   color: #fff;
+}
+
+/* Handle validation styles */
+.handle-status {
+  position: absolute;
+  right: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.status-available {
+  color: #28a745;
+}
+
+.status-taken,
+.status-invalid {
+  color: #dc3545;
+}
+
+.error-text {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.success-text {
+  color: #28a745;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .auth-btn {

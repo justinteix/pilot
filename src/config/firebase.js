@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 // Replace with your actual Firebase config
@@ -13,7 +14,7 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:123456789:web:demo"
 };
 
-let app, auth, db;
+let app, auth, db, storage;
 
 try {
   // Initialize Firebase only if we have valid config
@@ -21,17 +22,20 @@ try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+    storage = getStorage(app);
   } else {
     // Mock Firebase for development
     console.warn('Firebase not configured. Using mock authentication.');
     auth = null;
     db = null;
+    storage = null;
   }
 } catch (error) {
   console.error('Firebase initialization error:', error);
   auth = null;
   db = null;
+  storage = null;
 }
 
-export { auth, db };
+export { auth, db, storage };
 export default app;

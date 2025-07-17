@@ -1,91 +1,93 @@
-/* Modern Header Design - YouTube/Reddit Style */
+/* Modern Header Design */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(26, 26, 26, 0.98);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 1000;
-  height: 64px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  height: 72px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  height: 64px;
-  max-width: 1400px;
+  height: 72px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 16px;
-  gap: 24px;
+  padding: 0 24px;
+  gap: 32px;
 }
 
-/* Seamless Logo Section - YouTube/Reddit Style */
+/* Logo Section */
 .logo {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
   transition: all 0.2s ease;
   min-width: fit-content;
 }
 
 .logo:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
 }
 
 .logo-icon {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
 }
 
 .logo-text {
-  height: 20px;
+  height: 22px;
   width: auto;
   flex-shrink: 0;
-  margin-left: 2px;
+  margin-left: 4px;
 }
 
 /* Navigation */
 .nav {
   display: flex;
-  gap: 4px;
-  margin-left: 16px;
+  gap: 8px;
+  margin-left: 24px;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   text-decoration: none;
-  color: #e0e0e0;
+  color: #ccc;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 15px;
   transition: all 0.2s ease;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
   white-space: nowrap;
 }
 
 .nav-link:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
 }
 
 .nav-link.active {
   color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.1);
+  background: rgba(255, 107, 107, 0.12);
 }
 
-/* Search Section - YouTube Style */
+/* Search Section */
 .search-form {
   flex: 1;
-  max-width: 600px;
+  max-width: 640px;
   display: flex;
   justify-content: center;
 }
@@ -94,40 +96,41 @@
   position: relative;
   display: flex;
   width: 100%;
-  max-width: 540px;
+  max-width: 560px;
 }
 
 .search-input {
   width: 100%;
-  height: 40px;
-  padding: 0 16px 0 40px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  height: 44px;
+  padding: 0 20px 0 48px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
   color: #fff;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  font-weight: 400;
 }
 
 .search-input::placeholder {
-  color: #aaa;
+  color: #999;
 }
 
 .search-input:focus {
   outline: none;
   border-color: #ff6b6b;
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+  transform: translateY(-1px);
 }
 
 .search-icon {
   position: absolute;
-  left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #aaa;
+  color: #999;
   z-index: 2;
-  transition: color 0.2s ease;
+  transition: color 0.3s ease;
 }
 
 .search-input:focus + .search-icon {
@@ -138,53 +141,61 @@
 .auth-section {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   margin-left: auto;
 }
 
 .auth-buttons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .auth-btn {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 18px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .auth-btn.signin {
-  background: transparent;
-  color: #e0e0e0;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .auth-btn.signin:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-.auth-btn.signup {
-  background: #ff6b6b;
-  color: #fff;
-}
-
-.auth-btn.signup:hover {
-  background: #ff5252;
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
 }
 
-/* User Menu - Reddit Style */
+.auth-btn.signup {
+  background: linear-gradient(135deg, #ff6b6b, #ff5252);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.auth-btn.signup:hover {
+  background: linear-gradient(135deg, #ff5252, #ff4444);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.4);
+}
+
+/* User Menu */
 .user-menu {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .profile-link {
@@ -192,32 +203,37 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: #e0e0e0;
+  color: #fff;
   transition: all 0.2s ease;
-  padding: 8px 12px;
-  border-radius: 8px;
-  max-width: 200px;
-  min-height: 48px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  max-width: 220px;
+  min-height: 52px;
   box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .profile-link:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .profile-avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #fff;
   flex-shrink: 0;
   background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  border: 2px solid rgba(255, 107, 107, 0.2);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
 }
 
 .profile-avatar img {
@@ -233,12 +249,12 @@
   justify-content: center;
   min-width: 0;
   flex: 1;
-  gap: 2px;
+  gap: 3px;
 }
 
 .profile-name {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: #ffffff;
   margin: 0;
   line-height: 1.2;
@@ -248,9 +264,9 @@
 }
 
 .profile-handle {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
-  color: #aaa;
+  color: #999;
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
@@ -258,40 +274,84 @@
   text-overflow: ellipsis;
 }
 
+.user-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-search-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 .sign-out-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  border-radius: 6px;
-  color: #aaa;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #999;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .sign-out-btn:hover {
-  background: rgba(255, 107, 107, 0.2);
+  background: rgba(255, 107, 107, 0.15);
+  border-color: rgba(255, 107, 107, 0.3);
   color: #ff6b6b;
+  transform: translateY(-1px);
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .header-content {
+    gap: 24px;
+    padding: 0 20px;
+  }
+  
+  .search-form {
+    max-width: 480px;
+  }
+}
+
 @media (max-width: 1024px) {
   .header-content {
-    gap: 16px;
+    gap: 20px;
+    padding: 0 16px;
   }
   
   .search-form {
     max-width: 400px;
   }
+  
+  .nav {
+    margin-left: 16px;
+  }
 }
 
 @media (max-width: 768px) {
+  .header {
+    height: 64px;
+  }
+  
   .header-content {
-    padding: 0 12px;
-    gap: 12px;
+    height: 64px;
+    padding: 0 16px;
+    gap: 16px;
   }
 
   .nav {
@@ -299,12 +359,17 @@
   }
 
   .search-form {
-    max-width: 300px;
+    max-width: 320px;
   }
 
   .search-input {
-    height: 36px;
-    font-size: 13px;
+    height: 40px;
+    font-size: 14px;
+    padding: 0 16px 0 44px;
+  }
+  
+  .search-icon {
+    left: 14px;
   }
 
   .profile-info {
@@ -312,28 +377,46 @@
   }
 
   .auth-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    height: 40px;
+  }
+  
+  .user-search-btn,
+  .sign-out-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .profile-link {
+    min-height: 48px;
     padding: 6px 12px;
-    font-size: 13px;
+  }
+  
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .header-content {
-    padding: 0 8px;
-    gap: 8px;
+    padding: 0 12px;
+    gap: 12px;
   }
 
   .logo {
-    padding: 6px 8px;
+    padding: 8px 12px;
   }
 
   .logo-icon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
   }
 
   .logo-text {
-    height: 16px;
+    height: 18px;
   }
 
   .search-form {
@@ -341,22 +424,36 @@
   }
 
   .search-input {
-    height: 32px;
-    padding: 0 12px 0 32px;
-    font-size: 12px;
+    height: 36px;
+    padding: 0 12px 0 36px;
+    font-size: 13px;
+    border-radius: 18px;
   }
 
   .search-icon {
-    left: 10px;
+    left: 12px;
+  }
+  
+  .auth-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    height: 36px;
+  }
+
+  .user-search-btn,
+  .sign-out-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .profile-link {
+    min-height: 44px;
+    padding: 4px 8px;
   }
 
   .profile-avatar {
     width: 28px;
     height: 28px;
-  }
-
-  .sign-out-btn {
-    width: 28px;
-    height: 28px;
+    font-size: 11px;
   }
 }

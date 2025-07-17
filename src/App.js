@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Landing from './pages/Landing';
 import MovieDetail from './pages/MovieDetail';
 import Profile from './pages/Profile';
+import UserProfile from './pages/UserProfile';
 import AuthModal from './components/AuthModal';
 import './App.css';
 
@@ -58,6 +59,7 @@ function AppContent() {
           <Route path="/movie/:id" element={<MovieDetail />} />
           <Route path="/tv/:id" element={<MovieDetail />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/user/:userId" element={<UserProfile />} />
         </Routes>
       </main>
       

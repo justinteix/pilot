@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Film, Tv, LogOut } from "lucide-react";
+import { Search, Film, Tv, LogOut, Users } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { signOutUser } from "../services/authService";
+import UserSearch from "./UserSearch";
 import "./Header.css";
 import PilotIcon from "../images/PilotIcon.svg";
 import PilotText from "../images/PilotText.svg";
@@ -10,6 +11,7 @@ import PilotText from "../images/PilotText.svg";
 const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
   const navigate = useNavigate();
   const { currentUser, userProfile } = useAuth();
+  const [userSearchOpen, setUserSearchOpen] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -31,7 +33,7 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
     <header className="header">
       <div className="container">
         <div className="header-content">
-          <Link to="/" className="logo-link">
+          <Link to="/" className="logo">
             <img src={PilotIcon} alt="Pilot Icon" className="logo-icon" />
             <img src={PilotText} alt="Pilot Text" className="logo-text" />
           </Link>
@@ -62,6 +64,13 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
           <div className="auth-section">
             {currentUser ? (
               <div className="user-menu">
+                <button 
+                  onClick={() => setUserSearchOpen(true)}
+                  className="user-search-btn"
+                  title="Find Users"
+                >
+                  <Users size={18} />
+                </button>
                 <Link to="/profile" className="profile-link">
                   {userProfile?.photoURL ? (
                     <img
@@ -81,12 +90,7 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
                       {userProfile?.displayName || "User"}
                     </div>
                     <div className="profile-handle">
-                      @
-                      {userProfile?.displayName
-                        ?.toLowerCase()
-                        .replace(/\s+/g, "") ||
-                        currentUser?.email?.split("@")[0] ||
-                        "user"}
+                      @{userProfile?.handle || "loading..."}
                     </div>
                   </div>
                 </Link>
@@ -113,6 +117,11 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
           </div>
         </div>
       </div>
+      
+      <UserSearch 
+        isOpen={userSearchOpen} 
+        onClose={() => setUserSearchOpen(false)} 
+      />
     </header>
   );
 };

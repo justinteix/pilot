@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
-import { signUpWithEmailAndPassword, signInWithEmailAndPassword, signInWithGoogle } from '../services/authService';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Mail, Lock, User, Eye, EyeOff, AtSign, Check, AlertCircle, Loader } from 'lucide-react';
+import { signUpWithEmailAndPassword, signInWithEmailAndPassword, signInWithGoogle, checkHandleAvailability } from '../services/authService';
 import './AuthModal.css';
 
 const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
@@ -8,31 +8,73 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    username: '',
+    displayName: '',
+    handle: '',
     confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [handleChecking, setHandleChecking] = useState(false);
+  const [handleStatus, setHandleStatus] = useState(null); // 'available', 'taken', 'invalid'
+  const handleTimeoutRef = useRef(null);
 
   // Update mode when initialMode prop changes
   useEffect(() => {
     setMode(initialMode);
     setError('');
+    setSuccess('');
+    setHandleStatus(null);
     setFormData({
       email: '',
       password: '',
-      username: '',
+      displayName: '',
+      handle: '',
       confirmPassword: ''
     });
   }, [initialMode]);
 
   const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
     setError('');
+
+    // Handle validation for handle field
+    if (name === 'handle' && mode === 'signup') {
+      setHandleStatus(null);
+      
+      // Clear previous timeout
+      if (handleTimeoutRef.current) {
+        clearTimeout(handleTimeoutRef.current);
+      }
+      
+      // Validate handle format
+      const handleRegex = /^[a-zA-Z0-9_]{3,20}$/;
+      if (value && !handleRegex.test(value)) {
+        setHandleStatus('invalid');
+        return;
+      }
+      
+      // Check availability after delay
+      if (value && value.length >= 3) {
+        handleTimeoutRef.current = setTimeout(async () => {
+          setHandleChecking(true);
+          try {
+            const isAvailable = await checkHandleAvailability(value);
+            setHandleStatus(isAvailable ? 'available' : 'taken');
+          } catch (error) {
+            console.error('Error checking handle:', error);
+            setHandleStatus('error');
+          } finally {
+            setHandleChecking(false);
+          }
+        }, 500);
+      }
+    }
   };
 
   const getErrorMessage = (error) => {
@@ -71,11 +113,48 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
         if (formData.password.length < 6) {
           throw new Error('Password must be at least 6 characters');
         }
-        await signUpWithEmailAndPassword(formData.email, formData.password, formData.username);
+        if (!formData.displayName.trim()) {
+          throw new Error('Display name is required');
+        }
+        if (!formData.handle.trim()) {
+          throw new Error('Handle is required');
+        }
+        if (handleStatus === 'taken') {
+          throw new Error('Handle is already taken');
+        }
+        if (handleStatus === 'invalid') {
+          throw new Error('Handle must be 3-20 characters (letters, numbers, underscores only)');
+        }
+        
+        await signUpWithEmailAndPassword(
+          formData.email, 
+          formData.password, 
+          formData.displayName, 
+          formData.handle
+        );
+        
+        // Show success message for signup
+        setSuccess(`Account created successfully! We've sent a verification email to ${formData.email}. Please check your inbox and verify your email to continue.`);
+        setFormData({
+          email: '',
+          password: '',
+          displayName: '',
+          handle: '',
+          confirmPassword: ''
+        });
+        setHandleStatus(null);
+        
+        // Close modal after showing success message
+        setTimeout(() => {
+          setSuccess('');
+          onClose();
+        }, 5000);
+        
+        return; // Don't close immediately for signup
       } else {
         await signInWithEmailAndPassword(formData.email, formData.password);
+        onClose();
       }
-      onClose();
     } catch (error) {
       setError(getErrorMessage(error));
     } finally {
@@ -100,10 +179,12 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
   const switchMode = () => {
     setMode(mode === 'signin' ? 'signup' : 'signin');
     setError('');
+    setHandleStatus(null);
     setFormData({
       email: '',
       password: '',
-      username: '',
+      displayName: '',
+      handle: '',
       confirmPassword: ''
     });
   };
@@ -128,22 +209,54 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
         </div>
 
         {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           {mode === 'signup' && (
-            <div className="form-group">
-              <div className="input-wrapper">
-                <User className="input-icon" size={20} />
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  required
-                />
+            <>
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <User className="input-icon" size={20} />
+                  <input
+                    type="text"
+                    name="displayName"
+                    placeholder="Display Name"
+                    value={formData.displayName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
               </div>
-            </div>
+              
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <AtSign className="input-icon" size={20} />
+                  <input
+                    type="text"
+                    name="handle"
+                    placeholder="Handle (e.g., moviefan123)"
+                    value={formData.handle}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <div className="handle-status">
+                    {handleChecking && <Loader size={16} className="spinning" />}
+                    {handleStatus === 'available' && <Check size={16} className="status-available" />}
+                    {handleStatus === 'taken' && <AlertCircle size={16} className="status-taken" />}
+                    {handleStatus === 'invalid' && <AlertCircle size={16} className="status-invalid" />}
+                  </div>
+                </div>
+                {handleStatus === 'taken' && (
+                  <small className="error-text">Handle is already taken</small>
+                )}
+                {handleStatus === 'invalid' && (
+                  <small className="error-text">Handle must be 3-20 characters (letters, numbers, underscores only)</small>
+                )}
+                {handleStatus === 'available' && (
+                  <small className="success-text">Handle is available</small>
+                )}
+              </div>
+            </>
           )}
 
           <div className="form-group">

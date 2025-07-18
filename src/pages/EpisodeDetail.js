@@ -5,6 +5,7 @@ import { tvApi } from '../services/tmdbApi';
 import SeasonNavigator from '../components/SeasonNavigator';
 import EpisodeNavigator from '../components/EpisodeNavigator';
 import QuickRating from '../components/QuickRating';
+import EpisodeCastCrew from '../components/EpisodeCastCrew';
 import './EpisodeDetail.css';
 
 const EpisodeDetail = () => {
@@ -210,32 +211,10 @@ const EpisodeDetail = () => {
           </div>
         </div>
 
-        {episode.guest_stars && episode.guest_stars.length > 0 && (
-          <div className="guest-stars-section">
-            <h2>Guest Stars</h2>
-            <div className="cast-grid">
-              {episode.guest_stars.slice(0, 8).map((actor, index) => (
-                <div key={index} className="cast-member">
-                  <div className="cast-avatar">
-                    {actor.profile_path ? (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
-                        alt={actor.name}
-                        className="cast-photo"
-                      />
-                    ) : (
-                      actor.name.charAt(0)
-                    )}
-                  </div>
-                  <div className="cast-info">
-                    <div className="cast-name">{actor.name}</div>
-                    <div className="cast-character">{actor.character}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <EpisodeCastCrew 
+          guestStars={episode.guest_stars} 
+          crew={episode.crew} 
+        />
       </div>
     </div>
   );

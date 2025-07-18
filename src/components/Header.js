@@ -43,10 +43,21 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
     <header className="header">
       <div className="container">
         <div className="header-content">
-          <Link to="/" className="logo">
+          <button 
+            onClick={() => {
+              // If already on home page, refresh it
+              if (window.location.pathname === '/' && !window.location.search) {
+                window.location.reload();
+              } else {
+                // Navigate to home page (which will refresh if needed)
+                window.location.href = '/';
+              }
+            }}
+            className="logo"
+          >
             <img src={PilotIcon} alt="Pilot Icon" className="logo-icon" />
             <img src={PilotText} alt="Pilot Text" className="logo-text" />
-          </Link>
+          </button>
           <nav className="nav">
             <Link to="/" className="nav-link">
               <Film size={18} />

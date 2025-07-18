@@ -32,6 +32,10 @@
   border-radius: 12px;
   transition: all 0.2s ease;
   min-width: fit-content;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
 }
 
 .logo:hover {

@@ -8,15 +8,59 @@ import { movieApi, tvApi, searchApi } from "../services/tmdbApi";
 import "./Home.css";
 
 const Home = ({ onAuthRequired }) => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("popular");
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { currentUser, userProfile } = useAuth();
 
   const mediaType = searchParams.get("type") || "movie";
   const searchQuery = searchParams.get("search") || "";
+  const activeFilter = searchParams.get("filter") || "popular";
+
+  // Create a unique key for this filter/media combination
+  const cacheKey = `home-${activeFilter}-${mediaType}-${searchQuery || 'no-search'}`;
+
+  // Save state to sessionStorage
+  const saveState = (moviesData, page, totalPagesData) => {
+    const state = {
+      movies: moviesData,
+      currentPage: page,
+      totalPages: totalPagesData,
+      timestamp: Date.now()
+    };
+    sessionStorage.setItem(cacheKey, JSON.stringify(state));
+  };
+
+  // Load state from sessionStorage
+  const loadState = () => {
+    try {
+      const saved = sessionStorage.getItem(cacheKey);
+      if (saved) {
+        const state = JSON.parse(saved);
+        // Only use cached data if it's less than 10 minutes old
+        if (Date.now() - state.timestamp < 10 * 60 * 1000) {
+          return state;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load cached state:', error);
+    }
+    return null;
+  };
+
+  // Save scroll position
+  const saveScrollPosition = () => {
+    const scrollY = window.scrollY;
+    sessionStorage.setItem(`${cacheKey}-scroll`, scrollY.toString());
+    console.log('Saved scroll position:', scrollY); // Debug log
+  };
+
+
 
   // Filter function to remove incomplete movie/TV data
   const filterValidItems = (items) => {
@@ -43,55 +87,135 @@ const Home = ({ onAuthRequired }) => {
     });
   };
 
-  useEffect(() => {
-    const fetchMovies = async () => {
+  const fetchMovies = async (page = 1, append = false) => {
+    if (page === 1) {
       setLoading(true);
-      setError("");
+      setCurrentPage(1);
+    } else {
+      setLoadingMore(true);
+    }
+    setError("");
+    
+    try {
+      let response;
       
-      try {
-        let response;
-        
-        if (searchQuery) {
-          // Search for movies/TV shows
-          response = await searchApi.multi(searchQuery);
-        } else {
-          // Fetch based on active filter and media type
-          switch (activeFilter) {
-            case "popular":
-              response = mediaType === "tv" ? await tvApi.getTrending() : await movieApi.getTrending();
-              break;
-            case "recent":
-              response = mediaType === "tv" ? await tvApi.getOnTheAir() : await movieApi.getUpcoming();
-              break;
-            case "trending":
-              response = mediaType === "tv" ? await tvApi.getTopRated() : await movieApi.getTopRated();
-              break;
-            default:
-              response = mediaType === "tv" ? await tvApi.getTrending() : await movieApi.getTrending();
-          }
+      if (searchQuery) {
+        // Search for movies/TV shows
+        response = await searchApi.multi(searchQuery, page);
+      } else {
+        // Fetch based on active filter and media type
+        switch (activeFilter) {
+          case "popular":
+            response = mediaType === "tv" ? await tvApi.getTrending('week', page) : await movieApi.getTrending('week', page);
+            break;
+          case "recent":
+            response = mediaType === "tv" ? await tvApi.getOnTheAir(page) : await movieApi.getUpcoming(page);
+            break;
+          case "trending":
+            response = mediaType === "tv" ? await tvApi.getTopRated(page) : await movieApi.getTopRated(page);
+            break;
+          default:
+            response = mediaType === "tv" ? await tvApi.getTrending('week', page) : await movieApi.getTrending('week', page);
         }
-        
-        // Add media_type to items that don't have it
-        const moviesWithType = response.data.results.map(item => ({
-          ...item,
-          media_type: item.media_type || (item.title ? 'movie' : 'tv')
-        }));
-        
-        // Filter out incomplete items
-        const validMovies = filterValidItems(moviesWithType);
-        
-        setMovies(validMovies);
-      } catch (err) {
-        console.error("Error fetching movies:", err);
-        setError("Failed to load content. Please check your API configuration.");
-        setMovies([]);
-      } finally {
-        setLoading(false);
       }
+      
+      // Add media_type to items that don't have it
+      const moviesWithType = response.data.results.map(item => ({
+        ...item,
+        media_type: item.media_type || (item.title ? 'movie' : 'tv')
+      }));
+      
+      // Filter out incomplete items
+      const validMovies = filterValidItems(moviesWithType);
+      
+      let newMovies;
+      if (append) {
+        newMovies = [...movies, ...validMovies];
+        setMovies(newMovies);
+      } else {
+        newMovies = validMovies;
+        setMovies(newMovies);
+      }
+      
+      const newCurrentPage = response.data.page;
+      const newTotalPages = response.data.total_pages;
+      
+      setCurrentPage(newCurrentPage);
+      setTotalPages(newTotalPages);
+      
+      // Save state to sessionStorage
+      saveState(newMovies, newCurrentPage, newTotalPages);
+    } catch (err) {
+      console.error("Error fetching movies:", err);
+      setError("Failed to load content. Please check your API configuration.");
+      if (!append) setMovies([]);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    // Simple approach: always try to load cached state first
+    const cachedState = loadState();
+    
+    if (cachedState && !isInitialLoad) {
+      // Load from cache for navigation back
+      setMovies(cachedState.movies);
+      setCurrentPage(cachedState.currentPage);
+      setTotalPages(cachedState.totalPages);
+      setLoading(false);
+    } else {
+      // Fresh load or initial load
+      fetchMovies(1, false);
+    }
+    
+    setIsInitialLoad(false);
+  }, [searchParams, activeFilter, mediaType]);
+
+  // Simple scroll restoration after content loads
+  useEffect(() => {
+    if (!loading && movies.length > 0) {
+      const savedScroll = sessionStorage.getItem(`${cacheKey}-scroll`);
+      if (savedScroll) {
+        // Simple, reliable scroll restoration
+        setTimeout(() => {
+          window.scrollTo(0, parseInt(savedScroll));
+          console.log('Restored scroll to:', savedScroll);
+        }, 50);
+      }
+    }
+  }, [loading, movies.length, cacheKey]);
+
+  // Enable browser's native scroll restoration and save position
+  useEffect(() => {
+    // Enable browser's scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    // Save scroll position periodically and on navigation
+    const saveScrollPeriodically = () => {
+      saveScrollPosition();
     };
 
-    fetchMovies();
-  }, [searchParams, activeFilter, mediaType]);
+    // Save scroll position every 2 seconds while scrolling
+    let scrollTimer;
+    const handleScroll = () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(saveScrollPeriodically, 100);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('beforeunload', saveScrollPosition);
+    
+    return () => {
+      clearTimeout(scrollTimer);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('beforeunload', saveScrollPosition);
+      saveScrollPosition(); // Save on unmount
+    };
+  }, [cacheKey]);
 
   const filters = [
     { id: "popular", label: "Trending", icon: TrendingUp },
@@ -126,11 +250,7 @@ const Home = ({ onAuthRequired }) => {
                 `Welcome back, ${userProfile?.displayName || currentUser?.displayName || currentUser?.email?.split('@')[0] || 'User'}!`
               )}
             </h2>
-            {!searchQuery && (
-              <button className="view-all-btn" onClick={() => {}}>
-                View All <ChevronRight size={16} />
-              </button>
-            )}
+
           </div>
 
           {!searchQuery && (
@@ -143,7 +263,11 @@ const Home = ({ onAuthRequired }) => {
                     className={`filter-btn ${
                       activeFilter === filter.id ? "active" : ""
                     }`}
-                    onClick={() => setActiveFilter(filter.id)}
+                    onClick={() => {
+                      const newParams = new URLSearchParams(searchParams);
+                      newParams.set("filter", filter.id);
+                      setSearchParams(newParams);
+                    }}
                   >
                     <IconComponent size={16} style={{ marginRight: "6px" }} />
                     {filter.label}
@@ -156,15 +280,42 @@ const Home = ({ onAuthRequired }) => {
           {error ? (
             <div className="error-message">{error}</div>
           ) : movies.length > 0 ? (
-            <div className="movies-grid">
-              {movies.map((movie) => (
-                <MovieCard 
-                  key={`${movie.id}-${movie.media_type}`} 
-                  movie={movie} 
-                  onAuthRequired={onAuthRequired}
-                />
-              ))}
-            </div>
+            <>
+              <div className="movies-grid">
+                {movies.map((movie) => (
+                  <div key={`${movie.id}-${movie.media_type}`} onClick={saveScrollPosition}>
+                    <MovieCard 
+                      movie={movie} 
+                      onAuthRequired={onAuthRequired}
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {!searchQuery && currentPage < totalPages && (
+                <div className="load-more-section">
+                  <button 
+                    className="load-more-btn" 
+                    onClick={() => fetchMovies(currentPage + 1, true)}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? (
+                      <>
+                        <div className="loading-spinner"></div>
+                        Loading more...
+                      </>
+                    ) : (
+                      <>
+                        Load More <ChevronRight size={18} />
+                      </>
+                    )}
+                  </button>
+                  <p className="pagination-info">
+                    Page {currentPage} of {totalPages}
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="no-results">
               {searchQuery

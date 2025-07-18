@@ -15,8 +15,8 @@ const tmdbApi = axios.create({
 // Movie and TV Show API functions
 export const movieApi = {
   // Get trending movies
-  getTrending: (timeWindow = 'week') =>
-    tmdbApi.get(`/trending/movie/${timeWindow}`),
+  getTrending: (timeWindow = 'week', page = 1) =>
+    tmdbApi.get(`/trending/movie/${timeWindow}`, { params: { page } }),
 
   // Get popular movies
   getPopular: (page = 1) =>
@@ -62,8 +62,8 @@ export const movieApi = {
 
 export const tvApi = {
   // Get trending TV shows
-  getTrending: (timeWindow = 'week') =>
-    tmdbApi.get(`/trending/tv/${timeWindow}`),
+  getTrending: (timeWindow = 'week', page = 1) =>
+    tmdbApi.get(`/trending/tv/${timeWindow}`, { params: { page } }),
 
   // Get popular TV shows
   getPopular: (page = 1) =>

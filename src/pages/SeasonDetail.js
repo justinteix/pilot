@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Star, Calendar, Clock, Play } from 'lucide-react';
 import { tvApi } from '../services/tmdbApi';
 import SeasonNavigator from '../components/SeasonNavigator';
+import StarRating from '../components/StarRating';
 import './SeasonDetail.css';
 
 const SeasonDetail = () => {
@@ -123,6 +124,22 @@ const SeasonDetail = () => {
                     {season.vote_average.toFixed(1)}
                   </div>
                 )}
+              </div>
+              
+              {season.overview && (
+                <p className="season-overview">{season.overview}</p>
+              )}
+              
+              <div className="season-rating">
+                <StarRating
+                  contentId={parseInt(tvId)}
+                  mediaType="tv"
+                  size="medium"
+                  showLabel={true}
+                  seasonNumber={parseInt(seasonNumber)}
+                  showNumber={parseInt(tvId)}
+                  content={season}
+                />
               </div>
             </div>
           </div>

@@ -16,6 +16,7 @@ import { movieApi, tvApi } from "../services/tmdbApi";
 import { useAuth } from "../contexts/AuthContext";
 import { markAsWatched, removeFromWatched, addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, checkItemStatus } from "../services/userDataService";
 import CastCrew from "../components/CastCrew";
+import StarRating from "../components/StarRating";
 import "./MovieDetail.css";
 
 const MovieDetail = () => {
@@ -29,7 +30,6 @@ const MovieDetail = () => {
   const [trailer, setTrailer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [userRating, setUserRating] = useState(0);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isWatched, setIsWatched] = useState(false);
@@ -102,13 +102,8 @@ const MovieDetail = () => {
       setIsInWatchlist(status.inWatchlist);
       setIsLiked(status.inFavorites);
       setIsWatched(status.isWatched);
-      setUserRating(status.rating);
     }
   }, [userProfile, content, id, mediaType]);
-
-  const handleRating = (rating) => {
-    setUserRating(rating);
-  };
 
   const handleWatchedClick = async () => {
     if (!currentUser) {
@@ -447,23 +442,13 @@ const MovieDetail = () => {
                 </div>
 
                 <div className="user-rating">
-                  <h3>Your Rating</h3>
-                  <div className="rating-stars">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        className={`star-btn ${
-                          star <= userRating ? "active" : ""
-                        }`}
-                        onClick={() => handleRating(star)}
-                      >
-                        <Star
-                          size={24}
-                          fill={star <= userRating ? "currentColor" : "none"}
-                        />
-                      </button>
-                    ))}
-                  </div>
+                  <StarRating
+                    contentId={parseInt(id)}
+                    mediaType={mediaType}
+                    size="large"
+                    showLabel={true}
+                    content={content}
+                  />
                 </div>
               </div>
             </div>

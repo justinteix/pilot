@@ -77,6 +77,14 @@
   line-height: 1.6;
   color: var(--text-secondary);
   max-width: 800px;
+  margin: 16px 0;
+  font-size: 15px;
+}
+
+.season-rating {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .episodes-section {

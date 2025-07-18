@@ -5,6 +5,7 @@ import { tvApi } from '../services/tmdbApi';
 import SeasonNavigator from '../components/SeasonNavigator';
 import EpisodeNavigator from '../components/EpisodeNavigator';
 import EpisodeCastCrew from '../components/EpisodeCastCrew';
+import StarRating from '../components/StarRating';
 import './EpisodeDetail.css';
 
 const EpisodeDetail = () => {
@@ -15,7 +16,6 @@ const EpisodeDetail = () => {
   const [tvShow, setTvShow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [userRating, setUserRating] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
@@ -46,9 +46,7 @@ const EpisodeDetail = () => {
     }
   }, [tvId, seasonNumber, episodeNumber]);
 
-  const handleRating = (rating) => {
-    setUserRating(rating);
-  };
+
 
   const getStillUrl = (stillPath) => {
     if (!stillPath) return '/api/placeholder/800/450';
@@ -164,23 +162,16 @@ const EpisodeDetail = () => {
             
             <div className="episode-actions">
               <div className="user-rating">
-                <h3>Your Rating</h3>
-                <div className="rating-stars">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      className={`star-btn ${
-                        star <= userRating ? "active" : ""
-                      }`}
-                      onClick={() => setUserRating(star)}
-                    >
-                      <Star
-                        size={20}
-                        fill={star <= userRating ? "currentColor" : "none"}
-                      />
-                    </button>
-                  ))}
-                </div>
+                <StarRating
+                  contentId={parseInt(tvId)}
+                  mediaType="tv"
+                  size="medium"
+                  showLabel={true}
+                  seasonNumber={parseInt(seasonNumber)}
+                  episodeNumber={parseInt(episodeNumber)}
+                  showNumber={parseInt(tvId)}
+                  content={episode}
+                />
               </div>
               
               <div className="action-buttons">

@@ -220,15 +220,37 @@ export const getUserStats = async (userId) => {
       
       // Calculate statistics
       const totalRatings = Object.keys(ratings).length;
+      const ratingValues = Object.values(ratings).map(r => r.rating || r); // Handle both old and new rating format
       const averageRating = totalRatings > 0 
-        ? (Object.values(ratings).reduce((sum, rating) => sum + rating, 0) / totalRatings).toFixed(1)
+        ? (ratingValues.reduce((sum, rating) => sum + rating, 0) / totalRatings).toFixed(1)
         : 0;
+      
+      // Count ratings by content type
+      const movieRatings = Object.entries(ratings).filter(([key, data]) => 
+        key.startsWith('movie_') || (data.mediaType && data.mediaType === 'movie')
+      ).length;
+      
+      const tvRatings = Object.entries(ratings).filter(([key, data]) => 
+        key.startsWith('tv_') || (data.mediaType && data.mediaType === 'tv')
+      ).length;
+      
+      const episodeRatings = Object.entries(ratings).filter(([key, data]) => 
+        key.startsWith('episode_') || (data.mediaType && data.mediaType === 'episode')
+      ).length;
+      
+      const seasonRatings = Object.entries(ratings).filter(([key, data]) => 
+        key.startsWith('season_') || (data.mediaType && data.mediaType === 'season')
+      ).length;
       
       return {
         moviesWatched: watchedMovies.length,
         tvShowsWatched: watchedTVShows.length,
         totalRatings,
         averageRating: parseFloat(averageRating),
+        movieRatings,
+        tvRatings,
+        episodeRatings,
+        seasonRatings,
         totalWatchlistItems: (userData.watchlist || []).length,
         totalFavorites: (userData.favorites || []).length
       };
@@ -239,6 +261,10 @@ export const getUserStats = async (userId) => {
       tvShowsWatched: 0,
       totalRatings: 0,
       averageRating: 0,
+      movieRatings: 0,
+      tvRatings: 0,
+      episodeRatings: 0,
+      seasonRatings: 0,
       totalWatchlistItems: 0,
       totalFavorites: 0
     };

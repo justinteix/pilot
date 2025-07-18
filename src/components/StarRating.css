@@ -1,0 +1,291 @@
+.star-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  contain: layout style;
+}
+
+.star-rating.small {
+  gap: 6px;
+}
+
+.star-rating.large {
+  gap: 10px;
+}
+
+.star-rating.xl {
+  gap: 12px;
+}
+
+.rating-label {
+  font-size: 14px;
+  color: #ccc;
+  font-weight: 500;
+  margin: 0;
+}
+
+.star-rating.small .rating-label {
+  font-size: 12px;
+}
+
+.star-rating.large .rating-label {
+  font-size: 15px;
+}
+
+.star-rating.xl .rating-label {
+  font-size: 16px;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  contain: layout;
+  isolation: isolate;
+  flex-wrap: wrap;
+}
+
+.star-rating.small .rating-stars {
+  gap: 1px;
+}
+
+.star-rating.large .rating-stars {
+  gap: 3px;
+}
+
+.star-rating.xl .rating-stars {
+  gap: 4px;
+}
+
+.star-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.star-outline {
+  position: absolute;
+  color: #666;
+  transition: color 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.star-half-fill {
+  position: absolute;
+  color: #ffd700;
+  clip-path: inset(0 50% 0 0);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.star-full-fill {
+  position: absolute;
+  color: #ffd700;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 3;
+  opacity: 0;
+}
+
+.star-btn-left {
+  left: 0;
+}
+
+.star-btn-right {
+  right: 0;
+}
+
+.star-rating.small .star-container {
+  width: 18px;
+  height: 18px;
+}
+
+.star-rating.large .star-container {
+  width: 30px;
+  height: 30px;
+}
+
+.star-rating.xl .star-container {
+  width: 36px;
+  height: 36px;
+}
+
+/* Hover effects */
+.star-btn-left:hover ~ .star-outline {
+  color: #ffd700;
+  clip-path: inset(0 50% 0 0);
+}
+
+.star-btn-right:hover ~ .star-outline {
+  color: #ffd700;
+}
+
+.star-container:hover .star-outline {
+  color: #ffd700;
+  transform: scale(1.05);
+}
+
+.star-container:hover .star-half-fill,
+.star-container:hover .star-full-fill {
+  transform: scale(1.05);
+}
+
+.star-btn.active {
+  color: #ffd700;
+}
+
+.star-btn.active:hover {
+  color: #ffed4a;
+}
+
+.star-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.star-btn.loading {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.rating-text {
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+  margin-top: 4px;
+  line-height: 1;
+  min-height: 14px;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.star-rating.small .rating-text {
+  font-size: 11px;
+  min-height: 13px;
+}
+
+.star-rating.large .rating-text {
+  font-size: 13px;
+  min-height: 15px;
+}
+
+.star-rating.xl .rating-text {
+  font-size: 14px;
+  min-height: 16px;
+}
+
+.rating-text.rating-hint {
+  color: #ffd700;
+  opacity: 1;
+}
+
+.rating-text.current-rating {
+  color: #22c55e;
+  opacity: 1;
+}
+
+/* When showing "Rate this" (no rating and no hover) */
+.rating-text.no-rating {
+  opacity: 1;
+  color: #666;
+}
+
+/* Horizontal layout variant */
+.star-rating.horizontal {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.star-rating.horizontal .rating-label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.star-rating.horizontal .rating-text {
+  margin-top: 0;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+/* Compact variant for cards */
+.star-rating.compact {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.star-rating.compact .rating-label {
+  display: none;
+}
+
+.star-rating.compact .rating-text {
+  margin-top: 0;
+  margin-left: 4px;
+  font-size: 11px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .star-rating {
+    gap: 6px;
+  }
+  
+  .rating-stars {
+    gap: 1px;
+  }
+  
+  .star-container {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .rating-label {
+    font-size: 13px;
+  }
+  
+  .rating-text {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .star-rating:not(.compact) {
+    gap: 8px;
+  }
+  
+  .star-rating.horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .star-rating.horizontal .rating-text {
+    margin-left: 0;
+    margin-top: 2px;
+  }
+} 

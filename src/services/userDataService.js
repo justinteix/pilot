@@ -1,4 +1,4 @@
-import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, deleteField } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 // Add movie/show to watchlist
@@ -87,22 +87,50 @@ export const removeFromFavorites = async (userId, itemId, mediaType) => {
   }
 };
 
-// Rate movie/show
-export const rateItem = async (userId, itemId, mediaType, rating) => {
+// Rate any content (movies, TV shows, seasons, episodes)
+export const rateItem = async (userId, contentKey, mediaType, rating) => {
   try {
     const userRef = doc(db, 'users', userId);
-    const ratingKey = `ratings.${mediaType}_${itemId}`;
+    const ratingKey = `ratings.${contentKey}`;
     
-    await updateDoc(userRef, {
-      [ratingKey]: {
-        rating,
-        ratedAt: new Date().toISOString()
-      }
-    });
+    if (rating > 0) {
+      // Add or update rating
+      await updateDoc(userRef, {
+        [ratingKey]: {
+          rating,
+          ratedAt: new Date().toISOString(),
+          mediaType: mediaType
+        }
+      });
+    } else {
+      // Remove rating if 0 or negative
+      await updateDoc(userRef, {
+        [ratingKey]: deleteField()
+      });
+    }
   } catch (error) {
     console.error('Error rating item:', error);
     throw error;
   }
+};
+
+// Get rating for specific content
+export const getContentRating = (userProfile, contentKey) => {
+  if (!userProfile || !userProfile.ratings) return 0;
+  return userProfile.ratings[contentKey]?.rating || 0;
+};
+
+// Get all ratings by media type
+export const getRatingsByType = (userProfile, mediaType) => {
+  if (!userProfile || !userProfile.ratings) return [];
+  
+  return Object.entries(userProfile.ratings)
+    .filter(([key, data]) => data.mediaType === mediaType)
+    .map(([key, data]) => ({
+      contentKey: key,
+      rating: data.rating,
+      ratedAt: data.ratedAt
+    }));
 };
 
 // Mark as watched

@@ -180,10 +180,6 @@
   border-color: var(--primary-color);
 }
 
-.user-rating {
-  margin-top: 1.5rem;
-}
-
 .user-rating h3 {
   margin-bottom: 0.75rem;
   font-size: 1.1rem;

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, Plus, Check, Heart, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, checkItemStatus, markAsWatched, removeFromWatched } from '../services/userDataService';
+import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, checkItemStatus, markAsWatched, removeFromWatched, getContentRating } from '../services/userDataService';
 import { getImageUrl } from '../services/tmdbApi';
+
 import './MovieCard.css';
 
 const MovieCard = ({ movie, onAuthRequired }) => {
@@ -15,6 +16,7 @@ const MovieCard = ({ movie, onAuthRequired }) => {
     rating: 0,
     isWatched: false
   });
+  const [userRating, setUserRating] = useState(0);
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -24,6 +26,11 @@ const MovieCard = ({ movie, onAuthRequired }) => {
     if (userProfile) {
       const status = checkItemStatus(userProfile, movie.id, mediaType);
       setItemStatus(status);
+      
+      // Get user's personal rating for this content
+      const contentKey = `${mediaType}_${movie.id}`;
+      const rating = getContentRating(userProfile, contentKey);
+      setUserRating(rating);
     }
   }, [userProfile, movie.id, mediaType]);
 
@@ -176,12 +183,20 @@ const MovieCard = ({ movie, onAuthRequired }) => {
           <span className="movie-year">
             {new Date(movie.release_date || movie.first_air_date).getFullYear() || 'TBA'}
           </span>
-          {movie.vote_average > 0 && (
-            <div className="movie-rating">
-              <Star size={14} fill="currentColor" />
-              {movie.vote_average.toFixed(1)}
-            </div>
-          )}
+          <div className="ratings-container">
+            {movie.vote_average > 0 && (
+              <div className="movie-rating tmdb-rating">
+                <Star size={14} fill="currentColor" />
+                {movie.vote_average.toFixed(1)}
+              </div>
+            )}
+            {userRating > 0 && (
+              <div className="movie-rating user-rating">
+                <Star size={14} fill="currentColor" />
+                {userRating}
+              </div>
+            )}
+          </div>
         </div>
         {movie.genre_ids && movie.genre_ids.length > 0 && (
           <div className="movie-genres">

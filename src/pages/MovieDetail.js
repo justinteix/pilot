@@ -9,8 +9,12 @@ import {
   Plus,
   Check,
   Heart,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { movieApi, tvApi } from "../services/tmdbApi";
+import { useAuth } from "../contexts/AuthContext";
+import { markAsWatched, removeFromWatched, addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, checkItemStatus } from "../services/userDataService";
 import CastCrew from "../components/CastCrew";
 import "./MovieDetail.css";
 
@@ -18,6 +22,7 @@ const MovieDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser, userProfile, setUserProfile } = useAuth();
   const [content, setContent] = useState(null);
   const [cast, setCast] = useState([]);
   const [crew, setCrew] = useState([]);
@@ -27,6 +32,7 @@ const MovieDetail = () => {
   const [userRating, setUserRating] = useState(0);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [isWatched, setIsWatched] = useState(false);
 
   // Determine if this is a movie or TV show based on the URL
   const isMovie = location.pathname.startsWith("/movie/");
@@ -89,8 +95,115 @@ const MovieDetail = () => {
     }
   }, [id, isMovie]);
 
+  // Check user's item status (watchlist, favorites, watched) when userProfile changes
+  useEffect(() => {
+    if (userProfile && content) {
+      const status = checkItemStatus(userProfile, parseInt(id), mediaType);
+      setIsInWatchlist(status.inWatchlist);
+      setIsLiked(status.inFavorites);
+      setIsWatched(status.isWatched);
+      setUserRating(status.rating);
+    }
+  }, [userProfile, content, id, mediaType]);
+
   const handleRating = (rating) => {
     setUserRating(rating);
+  };
+
+  const handleWatchedClick = async () => {
+    if (!currentUser) {
+      // You could trigger an auth modal here if needed
+      return;
+    }
+
+    try {
+      if (isWatched) {
+        await removeFromWatched(currentUser.uid, parseInt(id), mediaType);
+      } else {
+        await markAsWatched(currentUser.uid, {
+          id: parseInt(id),
+          title: content.title || content.name,
+          poster_path: content.poster_path,
+          release_date: content.release_date || content.first_air_date,
+          vote_average: content.vote_average,
+          media_type: mediaType
+        });
+      }
+      
+      // Update local state
+      setIsWatched(!isWatched);
+      
+      // Refresh user profile
+      const { getUserProfile } = await import('../services/authService');
+      const updatedProfile = await getUserProfile(currentUser.uid);
+      setUserProfile(updatedProfile);
+    } catch (error) {
+      console.error('Error updating watched status:', error);
+    }
+  };
+
+  const handleWatchlistClick = async () => {
+    if (!currentUser) {
+      // You could trigger an auth modal here if needed
+      return;
+    }
+
+    try {
+      if (isInWatchlist) {
+        await removeFromWatchlist(currentUser.uid, parseInt(id), mediaType);
+      } else {
+        await addToWatchlist(currentUser.uid, {
+          id: parseInt(id),
+          title: content.title || content.name,
+          poster_path: content.poster_path,
+          release_date: content.release_date || content.first_air_date,
+          vote_average: content.vote_average,
+          media_type: mediaType
+        });
+      }
+      
+      // Update local state
+      setIsInWatchlist(!isInWatchlist);
+      
+      // Refresh user profile
+      const { getUserProfile } = await import('../services/authService');
+      const updatedProfile = await getUserProfile(currentUser.uid);
+      setUserProfile(updatedProfile);
+    } catch (error) {
+      console.error('Error updating watchlist:', error);
+    }
+  };
+
+  const handleFavoriteClick = async () => {
+    if (!currentUser) {
+      // You could trigger an auth modal here if needed
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        await removeFromFavorites(currentUser.uid, parseInt(id), mediaType);
+      } else {
+        await addToFavorites(currentUser.uid, {
+          id: parseInt(id),
+          title: content.title || content.name,
+          poster_path: content.poster_path,
+          release_date: content.release_date || content.first_air_date,
+          vote_average: content.vote_average,
+          media_type: mediaType
+        });
+      }
+      
+      // Update local state
+      setIsLiked(!isLiked);
+      
+      // Refresh user profile
+      const { getUserProfile } = await import('../services/authService');
+      const updatedProfile = await getUserProfile(currentUser.uid);
+      setUserProfile(updatedProfile);
+    } catch (error) {
+      console.error('Error updating favorites:', error);
+    }
   };
 
   const handleWatchTrailer = () => {
@@ -312,14 +425,22 @@ const MovieDetail = () => {
                     className={`btn btn-secondary ${
                       isInWatchlist ? "active" : ""
                     }`}
-                    onClick={() => setIsInWatchlist(!isInWatchlist)}
+                    onClick={handleWatchlistClick}
                   >
                     {isInWatchlist ? <Check size={18} /> : <Plus size={18} />}
                     {isInWatchlist ? "In Watchlist" : "Add to Watchlist"}
                   </button>
                   <button
+                    className={`btn btn-secondary ${isWatched ? "active watched" : ""}`}
+                    onClick={handleWatchedClick}
+                    title={isWatched ? 'Mark as unwatched' : 'Mark as watched'}
+                  >
+                    {isWatched ? <Eye size={18} /> : <EyeOff size={18} />}
+                    {isWatched ? "Watched" : "Mark as Watched"}
+                  </button>
+                  <button
                     className={`btn btn-icon ${isLiked ? "liked" : ""}`}
-                    onClick={() => setIsLiked(!isLiked)}
+                    onClick={handleFavoriteClick}
                   >
                     <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
                   </button>

@@ -129,6 +129,29 @@ export const markAsWatched = async (userId, item) => {
   }
 };
 
+// Remove from watched
+export const removeFromWatched = async (userId, itemId, mediaType) => {
+  try {
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      const userData = userSnap.data();
+      const watchedArray = mediaType === 'movie' ? 'watchedMovies' : 'watchedTVShows';
+      const updatedWatched = (userData[watchedArray] || []).filter(
+        item => item.id !== itemId
+      );
+      
+      await updateDoc(userRef, {
+        [watchedArray]: updatedWatched
+      });
+    }
+  } catch (error) {
+    console.error('Error removing from watched:', error);
+    throw error;
+  }
+};
+
 // Check if item is in user's lists
 export const checkItemStatus = (userProfile, itemId, mediaType) => {
   if (!userProfile) return { inWatchlist: false, inFavorites: false, rating: 0, isWatched: false };

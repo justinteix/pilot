@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Star, Calendar, Clock, Play } from 'lucide-react';
 import { tvApi } from '../services/tmdbApi';
 import SeasonNavigator from '../components/SeasonNavigator';
-import QuickRating from '../components/QuickRating';
 import './SeasonDetail.css';
 
 const SeasonDetail = () => {
@@ -198,21 +197,6 @@ const SeasonDetail = () => {
                       <p className="episode-overview unreleased-text">
                         This episode hasn't aired yet. Check back after the air date!
                       </p>
-                    )}
-                    
-                    {released && (
-                      <div className="episode-quick-rating" onClick={(e) => e.preventDefault()}>
-                        <QuickRating
-                          initialRating={0}
-                          initialWatched={false}
-                          initialLiked={false}
-                          onRatingChange={(rating) => console.log(`Episode ${episode.episode_number} rated:`, rating)}
-                          onWatchedChange={(watched) => console.log(`Episode ${episode.episode_number} watched:`, watched)}
-                          onLikedChange={(liked) => console.log(`Episode ${episode.episode_number} liked:`, liked)}
-                          size="medium"
-                          showLabels={false}
-                        />
-                      </div>
                     )}
                   </div>
                 </CardComponent>

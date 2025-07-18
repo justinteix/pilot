@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, Film, Tv, Star, Calendar, TrendingUp, Heart, MapPin, Globe, Edit3 } from 'lucide-react';
+import { User, Film, Tv, Star, Calendar, TrendingUp, Heart, MapPin, Globe, Edit3, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserProfile, getUserStats } from '../services/authService';
 import MovieCard from '../components/MovieCard';
@@ -20,7 +20,8 @@ const UserProfile = () => {
   const [userMovies, setUserMovies] = useState({
     watchlist: [],
     favorites: [],
-    ratings: []
+    ratings: [],
+    watched: []
   });
 
   const isOwnProfile = currentUser && (userId === currentUser.uid || !userId);
@@ -55,6 +56,11 @@ const UserProfile = () => {
         
         // Load user's movies (watchlist, favorites, etc.)
         // This would typically come from the profile data
+        const allWatched = [
+          ...(profile.watchedMovies || []),
+          ...(profile.watchedTVShows || [])
+        ];
+        
         setUserMovies({
           watchlist: profile.watchlist || [],
           favorites: profile.favorites || [],
@@ -62,7 +68,8 @@ const UserProfile = () => {
             movieId,
             rating,
             // You'd fetch movie details here
-          }))
+          })),
+          watched: allWatched
         });
         
       } catch (error) {
@@ -83,6 +90,7 @@ const UserProfile = () => {
   const tabs = [
     { id: 'watchlist', label: 'Watchlist', icon: Film, count: userMovies.watchlist.length },
     { id: 'favorites', label: 'Favorites', icon: Heart, count: userMovies.favorites.length },
+    { id: 'watched', label: 'Watched', icon: Eye, count: userMovies.watched.length },
     { id: 'ratings', label: 'Ratings', icon: Star, count: userMovies.ratings.length },
     { id: 'stats', label: 'Stats', icon: TrendingUp, count: null }
   ];
@@ -113,6 +121,20 @@ const UserProfile = () => {
             ) : (
               <div className="empty-state">
                 {isOwnProfile ? "No favorites yet. Start adding some!" : "No favorite movies yet."}
+              </div>
+            )}
+          </div>
+        );
+      case 'watched':
+        return (
+          <div className="movies-grid">
+            {userMovies.watched.length > 0 ? (
+              userMovies.watched.map(movie => (
+                <MovieCard key={`${movie.id}-${movie.media_type}`} movie={movie} />
+              ))
+            ) : (
+              <div className="empty-state">
+                {isOwnProfile ? "No watched movies or shows yet. Start watching!" : "No watched content yet."}
               </div>
             )}
           </div>

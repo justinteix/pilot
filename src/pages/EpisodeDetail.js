@@ -4,7 +4,6 @@ import { ArrowLeft, Star, Calendar, Clock, Heart, Plus, Check, ChevronLeft, Chev
 import { tvApi } from '../services/tmdbApi';
 import SeasonNavigator from '../components/SeasonNavigator';
 import EpisodeNavigator from '../components/EpisodeNavigator';
-import QuickRating from '../components/QuickRating';
 import EpisodeCastCrew from '../components/EpisodeCastCrew';
 import './EpisodeDetail.css';
 
@@ -17,7 +16,6 @@ const EpisodeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [userRating, setUserRating] = useState(0);
-  const [isWatched, setIsWatched] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
@@ -164,16 +162,37 @@ const EpisodeDetail = () => {
               <p className="episode-overview">{episode.overview}</p>
             )}
             
-            <QuickRating
-              initialRating={userRating}
-              initialWatched={isWatched}
-              initialLiked={isLiked}
-              onRatingChange={setUserRating}
-              onWatchedChange={setIsWatched}
-              onLikedChange={setIsLiked}
-              size="large"
-              showLabels={true}
-            />
+            <div className="episode-actions">
+              <div className="user-rating">
+                <h3>Your Rating</h3>
+                <div className="rating-stars">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      className={`star-btn ${
+                        star <= userRating ? "active" : ""
+                      }`}
+                      onClick={() => setUserRating(star)}
+                    >
+                      <Star
+                        size={20}
+                        fill={star <= userRating ? "currentColor" : "none"}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="action-buttons">
+                <button 
+                  className={`btn btn-icon ${isLiked ? "liked" : ""}`}
+                  onClick={() => setIsLiked(!isLiked)}
+                  title={isLiked ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

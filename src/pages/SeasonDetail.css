@@ -226,12 +226,6 @@
   color: var(--text-muted);
 }
 
-.episode-quick-rating {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border-color);
-}
-
 @media (max-width: 768px) {
   .season-info {
     flex-direction: column;

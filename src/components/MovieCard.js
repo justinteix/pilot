@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Plus, Check, Heart } from 'lucide-react';
+import { Star, Plus, Check, Heart, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, checkItemStatus } from '../services/userDataService';
+import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, checkItemStatus, markAsWatched, removeFromWatched } from '../services/userDataService';
 import { getImageUrl } from '../services/tmdbApi';
 import './MovieCard.css';
 
@@ -92,6 +92,36 @@ const MovieCard = ({ movie, onAuthRequired }) => {
     }
   };
 
+  const handleWatchedClick = async (e) => {
+    e.stopPropagation();
+    
+    if (!currentUser) {
+      onAuthRequired?.();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (itemStatus.isWatched) {
+        await removeFromWatched(currentUser.uid, movie.id, mediaType);
+      } else {
+        await markAsWatched(currentUser.uid, movie);
+      }
+      
+      // Update local state
+      setItemStatus(prev => ({ ...prev, isWatched: !prev.isWatched }));
+      
+      // Refresh user profile
+      const { getUserProfile } = await import('../services/authService');
+      const updatedProfile = await getUserProfile(currentUser.uid);
+      setUserProfile(updatedProfile);
+    } catch (error) {
+      console.error('Error updating watched status:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="movie-card" onClick={handleCardClick}>
       <div className="card-actions">
@@ -114,12 +144,14 @@ const MovieCard = ({ movie, onAuthRequired }) => {
         </button>
       </div>
 
-      {movie.vote_average > 0 && (
-        <div className="rating-overlay">
-          <Star size={12} fill="currentColor" />
-          {movie.vote_average.toFixed(1)}
-        </div>
-      )}
+      <button 
+        className={`watched-toggle ${itemStatus.isWatched ? 'watched' : ''}`}
+        onClick={handleWatchedClick}
+        disabled={loading}
+        title={itemStatus.isWatched ? 'Mark as unwatched' : 'Mark as watched'}
+      >
+        {itemStatus.isWatched ? <Eye size={16} /> : <EyeOff size={16} />}
+      </button>
 
       {!imageError ? (
         <img

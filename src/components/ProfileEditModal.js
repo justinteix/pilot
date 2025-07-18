@@ -1,67 +1,68 @@
-import React, { useState, useRef } from 'react';
-import { X, Camera, User, Save, Loader, Trash2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { updateUserProfile } from '../services/authService';
-import { uploadProfileImage } from '../services/storageService';
-import DeleteAccountModal from './DeleteAccountModal';
-import './ProfileEditModal.css';
+import React, { useState, useRef } from "react";
+import { X, Camera, User, Save, Loader, Trash2 } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { updateUserProfile } from "../services/authService";
+import { uploadProfileImage } from "../services/storageService";
+import DeleteAccountModal from "./DeleteAccountModal";
+import "./ProfileEditModal.css";
 
 const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
   const { currentUser, userProfile, setUserProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formData, setFormData] = useState({
-    displayName: userProfile?.displayName || '',
-    bio: userProfile?.bio || '',
-    location: userProfile?.location || '',
-    website: userProfile?.website || '',
+    displayName: userProfile?.displayName || "",
+    bio: userProfile?.bio || "",
+    location: userProfile?.location || "",
+    website: userProfile?.website || "",
     favoriteGenres: userProfile?.favoriteGenres || [],
-    isPublic: userProfile?.isPublic !== false // Default to public
+    isPublic: userProfile?.isPublic !== false, // Default to public
   });
   const [profileImage, setProfileImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(userProfile?.photoURL || '');
+  const [imagePreview, setImagePreview] = useState(userProfile?.photoURL || "");
   const fileInputRef = useRef(null);
 
   // Update form data when userProfile changes (including handle migration)
   React.useEffect(() => {
     if (userProfile) {
       setFormData({
-        displayName: userProfile.displayName || '',
-        bio: userProfile.bio || '',
-        location: userProfile.location || '',
-        website: userProfile.website || '',
+        displayName: userProfile.displayName || "",
+        bio: userProfile.bio || "",
+        location: userProfile.location || "",
+        website: userProfile.website || "",
         favoriteGenres: userProfile.favoriteGenres || [],
-        isPublic: userProfile.isPublic !== false
+        isPublic: userProfile.isPublic !== false,
       });
-      setImagePreview(userProfile.photoURL || '');
+      setImagePreview(userProfile.photoURL || "");
     }
   }, [userProfile]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleGenreToggle = (genreId) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       favoriteGenres: prev.favoriteGenres.includes(genreId)
-        ? prev.favoriteGenres.filter(id => id !== genreId)
-        : [...prev.favoriteGenres, genreId]
+        ? prev.favoriteGenres.filter((id) => id !== genreId)
+        : [...prev.favoriteGenres, genreId],
     }));
   };
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        alert('Image size should be less than 5MB');
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        alert("Image size should be less than 5MB");
         return;
       }
-      
+
       setProfileImage(file);
       const reader = new FileReader();
       reader.onload = (e) => setImagePreview(e.target.result);
@@ -75,8 +76,8 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
 
     setLoading(true);
     try {
-      let photoURL = userProfile?.photoURL || '';
-      
+      let photoURL = userProfile?.photoURL || "";
+
       // Upload new profile image if selected
       if (profileImage) {
         photoURL = await uploadProfileImage(currentUser.uid, profileImage);
@@ -86,23 +87,23 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
       const updatedData = {
         ...formData,
         photoURL,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       await updateUserProfile(currentUser.uid, updatedData);
-      
+
       // Update local state
       const updatedProfile = { ...userProfile, ...updatedData };
       setUserProfile(updatedProfile);
-      
+
       if (onProfileUpdate) {
         onProfileUpdate(updatedProfile);
       }
-      
+
       onClose();
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -112,7 +113,7 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="profile-edit-modal" onClick={e => e.stopPropagation()}>
+      <div className="profile-edit-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Edit Profile</h2>
           <button className="close-btn" onClick={onClose}>
@@ -124,7 +125,11 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
           <div className="profile-image-section">
             <div className="current-image">
               {imagePreview ? (
-                <img src={imagePreview} alt="Profile" className="profile-preview" />
+                <img
+                  src={imagePreview}
+                  alt="Profile"
+                  className="profile-preview"
+                />
               ) : (
                 <div className="default-avatar">
                   <User size={40} />
@@ -143,9 +148,11 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
               type="file"
               accept="image/*"
               onChange={handleImageSelect}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
-            <p className="image-help">Click the camera icon to change your profile picture</p>
+            <p className="image-help">
+              Click the camera icon to change your profile picture
+            </p>
           </div>
 
           <div className="form-group">
@@ -164,7 +171,7 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
           <div className="form-group">
             <label>Your Handle</label>
             <div className="handle-display">
-              @{userProfile?.handle || 'generating...'}
+              @{userProfile?.handle || "generating..."}
             </div>
             <small>Your unique handle cannot be changed</small>
           </div>
@@ -211,30 +218,32 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
             <label>Favorite Genres</label>
             <div className="genre-selection">
               {[
-                { id: 28, name: 'Action' },
-                { id: 12, name: 'Adventure' },
-                { id: 16, name: 'Animation' },
-                { id: 35, name: 'Comedy' },
-                { id: 80, name: 'Crime' },
-                { id: 99, name: 'Documentary' },
-                { id: 18, name: 'Drama' },
-                { id: 10751, name: 'Family' },
-                { id: 14, name: 'Fantasy' },
-                { id: 36, name: 'History' },
-                { id: 27, name: 'Horror' },
-                { id: 10402, name: 'Music' },
-                { id: 9648, name: 'Mystery' },
-                { id: 10749, name: 'Romance' },
-                { id: 878, name: 'Sci-Fi' },
-                { id: 10770, name: 'TV Movie' },
-                { id: 53, name: 'Thriller' },
-                { id: 10752, name: 'War' },
-                { id: 37, name: 'Western' }
-              ].map(genre => (
+                { id: 28, name: "Action" },
+                { id: 12, name: "Adventure" },
+                { id: 16, name: "Animation" },
+                { id: 35, name: "Comedy" },
+                { id: 80, name: "Crime" },
+                { id: 99, name: "Documentary" },
+                { id: 18, name: "Drama" },
+                { id: 10751, name: "Family" },
+                { id: 14, name: "Fantasy" },
+                { id: 36, name: "History" },
+                { id: 27, name: "Horror" },
+                { id: 10402, name: "Music" },
+                { id: 9648, name: "Mystery" },
+                { id: 10749, name: "Romance" },
+                { id: 878, name: "Sci-Fi" },
+                { id: 10770, name: "TV Movie" },
+                { id: 53, name: "Thriller" },
+                { id: 10752, name: "War" },
+                { id: 37, name: "Western" },
+              ].map((genre) => (
                 <button
                   key={genre.id}
                   type="button"
-                  className={`genre-tag ${formData.favoriteGenres.includes(genre.id) ? 'selected' : ''}`}
+                  className={`genre-tag ${
+                    formData.favoriteGenres.includes(genre.id) ? "selected" : ""
+                  }`}
                   onClick={() => handleGenreToggle(genre.id)}
                 >
                   {genre.name}
@@ -280,9 +289,12 @@ const ProfileEditModal = ({ isOpen, onClose, onProfileUpdate }) => {
 
         <div className="danger-zone">
           <h3>Danger Zone</h3>
-          <p>Once you delete your account, there is no going back. Please be certain.</p>
-          <button 
-            type="button" 
+          <p>
+            Once you delete your account, there is no going back. Please be
+            certain.
+          </p>
+          <button
+            type="button"
             className="delete-account-btn"
             onClick={() => setShowDeleteModal(true)}
           >

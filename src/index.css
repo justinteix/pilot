@@ -4,14 +4,27 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-color: #ff6b6b;
+  --primary-color-hover: #ff5252;
+  --primary-color-rgb: 255, 107, 107;
+  --accent-color: #ffd700;
+  --success-color: #10b981;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --card-background: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --background-color: #0f0f0f;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0f0f0f;
-  color: #ffffff;
+  background-color: var(--background-color);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 

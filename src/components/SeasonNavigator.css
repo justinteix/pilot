@@ -1,0 +1,91 @@
+.season-navigator {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.season-navigator-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.season-navigator-toggle:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.season-navigator-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #0f0f0f;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 0.25rem;
+}
+
+.season-navigator-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s ease;
+}
+
+.season-navigator-item:last-child {
+  border-bottom: none;
+}
+
+.season-navigator-item:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.season-navigator-item.active {
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+}
+
+.season-navigator-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.season-name {
+  font-weight: 500;
+}
+
+.season-episodes {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .season-navigator-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 400px;
+  }
+}

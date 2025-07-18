@@ -1,0 +1,135 @@
+.episode-navigator {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.episode-navigator-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.episode-navigator-toggle:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.episode-navigator-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #0f0f0f;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  margin-top: 0.25rem;
+  min-width: 400px;
+}
+
+.episode-navigator-header {
+  padding: 0.75rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0;
+}
+
+.episode-navigator-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.episode-navigator-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s ease;
+}
+
+.episode-navigator-item:last-child {
+  border-bottom: none;
+}
+
+.episode-navigator-item:hover {
+  background: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.episode-navigator-item.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.episode-navigator-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--border-color);
+  color: var(--text-primary);
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.episode-navigator-item.active .episode-navigator-number {
+  background: white;
+  color: var(--primary-color);
+}
+
+.episode-navigator-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.episode-name {
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.episode-date {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.episode-rating {
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.episode-navigator-item.active .episode-rating {
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .episode-navigator-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 500px;
+    min-width: unset;
+  }
+}

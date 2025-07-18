@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Film, Tv, LogOut, Users } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,11 +12,21 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
   const navigate = useNavigate();
   const { currentUser, userProfile } = useAuth();
   const [userSearchOpen, setUserSearchOpen] = useState(false);
+  const [inputValue, setInputValue] = useState(searchQuery);
+
+  // Sync input value with search query prop
+  useEffect(() => {
+    setInputValue(searchQuery);
+  }, [searchQuery]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+    if (inputValue.trim()) {
+      setSearchQuery(inputValue.trim());
+      navigate(`/?search=${encodeURIComponent(inputValue.trim())}`);
+    } else {
+      setSearchQuery('');
+      navigate('/');
     }
   };
 
@@ -54,8 +64,8 @@ const Header = ({ searchQuery, setSearchQuery, onAuthClick }) => {
               <input
                 type="text"
                 placeholder="Search movies and TV shows..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 className="search-input"
               />
             </div>

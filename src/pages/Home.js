@@ -7,15 +7,41 @@ import { useAuth } from "../contexts/AuthContext";
 import { movieApi, tvApi, searchApi } from "../services/tmdbApi";
 import "./Home.css";
 
-const Home = ({ searchQuery, onAuthRequired }) => {
+const Home = ({ onAuthRequired }) => {
   const [searchParams] = useSearchParams();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("trending");
+  const [activeFilter, setActiveFilter] = useState("popular");
   const [error, setError] = useState("");
   const { currentUser, userProfile } = useAuth();
 
   const mediaType = searchParams.get("type") || "movie";
+  const searchQuery = searchParams.get("search") || "";
+
+  // Filter function to remove incomplete movie/TV data
+  const filterValidItems = (items) => {
+    return items.filter(item => {
+      // Must have an ID
+      if (!item.id) return false;
+      
+      // Must have a title or name
+      if (!item.title && !item.name) return false;
+      
+      // Must have a poster image
+      if (!item.poster_path) return false;
+      
+      // Must have a release date or first air date
+      if (!item.release_date && !item.first_air_date) return false;
+      
+      // Filter out adult content if needed
+      if (item.adult === true) return false;
+      
+      // Must have some basic metadata
+      if (!item.overview && !item.vote_average && !item.popularity) return false;
+      
+      return true;
+    });
+  };
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -32,12 +58,15 @@ const Home = ({ searchQuery, onAuthRequired }) => {
           // Fetch based on active filter and media type
           switch (activeFilter) {
             case "popular":
-              response = mediaType === "tv" ? await tvApi.getPopular() : await movieApi.getPopular();
+              response = mediaType === "tv" ? await tvApi.getTrending() : await movieApi.getTrending();
               break;
             case "recent":
-              response = mediaType === "tv" ? await tvApi.getTopRated() : await movieApi.getNowPlaying();
+              response = mediaType === "tv" ? await tvApi.getOnTheAir() : await movieApi.getUpcoming();
               break;
-            default: // trending
+            case "trending":
+              response = mediaType === "tv" ? await tvApi.getTopRated() : await movieApi.getTopRated();
+              break;
+            default:
               response = mediaType === "tv" ? await tvApi.getTrending() : await movieApi.getTrending();
           }
         }
@@ -48,7 +77,10 @@ const Home = ({ searchQuery, onAuthRequired }) => {
           media_type: item.media_type || (item.title ? 'movie' : 'tv')
         }));
         
-        setMovies(moviesWithType);
+        // Filter out incomplete items
+        const validMovies = filterValidItems(moviesWithType);
+        
+        setMovies(validMovies);
       } catch (err) {
         console.error("Error fetching movies:", err);
         setError("Failed to load content. Please check your API configuration.");
@@ -59,12 +91,12 @@ const Home = ({ searchQuery, onAuthRequired }) => {
     };
 
     fetchMovies();
-  }, [searchQuery, activeFilter, mediaType]);
+  }, [searchParams, activeFilter, mediaType]);
 
   const filters = [
-    { id: "trending", label: "Trending", icon: TrendingUp },
-    { id: "popular", label: "Popular", icon: Star },
+    { id: "popular", label: "Trending", icon: TrendingUp },
     { id: "recent", label: "Recent", icon: Calendar },
+    { id: "trending", label: "Top Rated", icon: Star },
   ];
 
   if (loading) {

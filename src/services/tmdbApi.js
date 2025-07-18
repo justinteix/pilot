@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { fuzzySearch } from '../utils/fuzzySearch';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_API_KEY = process.env.REACT_APP_TMDB_API_KEY;
@@ -41,8 +42,17 @@ export const movieApi = {
       }
     }),
 
-  // Search movies
-  search: (query, page = 1) =>
+  // Search movies with fuzzy matching
+  search: async (query, page = 1) => {
+    return await fuzzySearch(
+      (searchQuery) => tmdbApi.get('/search/movie', { params: { query: searchQuery, page } }),
+      query,
+      { similarityThreshold: 0.2, maxVariations: 12 }
+    );
+  },
+  
+  // Exact search (for fallback)
+  searchExact: (query, page = 1) =>
     tmdbApi.get('/search/movie', { params: { query, page } }),
 
   // Get movie genres
@@ -63,6 +73,14 @@ export const tvApi = {
   getTopRated: (page = 1) =>
     tmdbApi.get('/tv/top_rated', { params: { page } }),
 
+  // Get TV shows airing today
+  getAiringToday: (page = 1) =>
+    tmdbApi.get('/tv/airing_today', { params: { page } }),
+
+  // Get on the air TV shows
+  getOnTheAir: (page = 1) =>
+    tmdbApi.get('/tv/on_the_air', { params: { page } }),
+
   // Get TV show details
   getDetails: (tvId) =>
     tmdbApi.get(`/tv/${tvId}`, {
@@ -71,18 +89,49 @@ export const tvApi = {
       }
     }),
 
-  // Search TV shows
-  search: (query, page = 1) =>
+  // Search TV shows with fuzzy matching
+  search: async (query, page = 1) => {
+    return await fuzzySearch(
+      (searchQuery) => tmdbApi.get('/search/tv', { params: { query: searchQuery, page } }),
+      query,
+      { similarityThreshold: 0.2, maxVariations: 12 }
+    );
+  },
+  
+  // Exact search (for fallback)
+  searchExact: (query, page = 1) =>
     tmdbApi.get('/search/tv', { params: { query, page } }),
 
   // Get TV genres
   getGenres: () =>
     tmdbApi.get('/genre/tv/list'),
+
+  // Get TV season details
+  getSeason: (tvId, seasonNumber) =>
+    tmdbApi.get(`/tv/${tvId}/season/${seasonNumber}`),
+
+  // Get TV episode details
+  getEpisode: (tvId, seasonNumber, episodeNumber) =>
+    tmdbApi.get(`/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`),
 };
 
 // Multi search (movies and TV shows)
 export const searchApi = {
-  multi: (query, page = 1) =>
+  multi: async (query, page = 1) => {
+    // Use fuzzy search for better typo tolerance
+    return await fuzzySearch(
+      (searchQuery) => tmdbApi.get('/search/multi', { params: { query: searchQuery, page } }),
+      query,
+      {
+        similarityThreshold: 0.2, // Extremely low threshold for maximum typo tolerance
+        maxVariations: 12,
+        combineResults: true
+      }
+    );
+  },
+  
+  // Original multi search (for fallback if needed)
+  multiExact: (query, page = 1) =>
     tmdbApi.get('/search/multi', { params: { query, page } }),
 };
 

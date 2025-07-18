@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { ArrowLeft, Star, Calendar, Clock, Play, Plus, Check, Heart } from 'lucide-react';
 import { movieApi, tvApi } from '../services/tmdbApi';
 import './MovieDetail.css';
@@ -71,6 +71,84 @@ const MovieDetail = () => {
   const getBackdropUrl = (backdropPath) => {
     if (!backdropPath) return '/api/placeholder/1200/675';
     return `https://image.tmdb.org/t/p/w1280${backdropPath}`;
+  };
+
+  const isSeasonReleased = (season) => {
+    if (!season.air_date) return false;
+    const airDate = new Date(season.air_date);
+    const today = new Date();
+    return airDate <= today;
+  };
+
+  const getSeasonsByType = (seasons) => {
+    if (!seasons) return { regularSeasons: [], specials: [] };
+    
+    // Separate regular seasons and specials
+    const regularSeasons = seasons.filter(season => season.season_number > 0);
+    const specials = seasons.filter(season => season.season_number === 0);
+    
+    // Sort regular seasons by season number
+    regularSeasons.sort((a, b) => a.season_number - b.season_number);
+    
+    return { regularSeasons, specials };
+  };
+
+  const renderSeasonCard = (season) => {
+    const released = isSeasonReleased(season);
+    const CardComponent = released ? Link : 'div';
+    const cardProps = released ? {
+      to: `/tv/${id}/season/${season.season_number}`
+    } : {};
+
+    return (
+      <CardComponent
+        key={season.id}
+        {...cardProps}
+        className={`season-card ${!released ? 'unreleased' : ''}`}
+      >
+        <div className="season-poster">
+          {released && season.poster_path ? (
+            <img
+              src={getPosterUrl(season.poster_path)}
+              alt={season.name}
+              className="poster-image"
+            />
+          ) : (
+            <div className="poster-placeholder">
+              <Play size={48} />
+              {!released && <span className="coming-soon">Coming Soon</span>}
+            </div>
+          )}
+        </div>
+        <div className="season-info">
+          <h3 className="season-title">
+            {season.name}
+            {!released && <span className="unreleased-badge">Unreleased</span>}
+          </h3>
+          <div className="season-meta">
+            <div className="meta-item">
+              <Calendar size={14} />
+              {season.air_date ? new Date(season.air_date).getFullYear() : 'TBA'}
+            </div>
+            <div className="meta-item">
+              <Play size={14} />
+              {season.episode_count} episodes
+            </div>
+            {released && season.vote_average > 0 && (
+              <div className="meta-item rating">
+                <Star size={14} fill="currentColor" />
+                {season.vote_average.toFixed(1)}
+              </div>
+            )}
+          </div>
+          {!released && (
+            <p className="season-unreleased-text">
+              This season hasn't aired yet. Check back after the air date!
+            </p>
+          )}
+        </div>
+      </CardComponent>
+    );
   };
 
   if (loading) {
@@ -217,6 +295,32 @@ const MovieDetail = () => {
       </div>
       
       <div className="container">
+        {!isMovie && content.seasons && content.seasons.length > 0 && (() => {
+          const { regularSeasons, specials } = getSeasonsByType(content.seasons);
+          
+          return (
+            <>
+              {regularSeasons.length > 0 && (
+                <div className="seasons-section">
+                  <h2>Seasons</h2>
+                  <div className="seasons-grid">
+                    {regularSeasons.map(renderSeasonCard)}
+                  </div>
+                </div>
+              )}
+              
+              {specials.length > 0 && (
+                <div className="seasons-section specials-section">
+                  <h2>Specials</h2>
+                  <div className="seasons-grid">
+                    {specials.map(renderSeasonCard)}
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        })()}
+
         {cast.length > 0 && (
           <div className="cast-section">
             <h2>Cast</h2>

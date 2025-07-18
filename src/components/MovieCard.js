@@ -16,6 +16,7 @@ const MovieCard = ({ movie, onAuthRequired }) => {
     isWatched: false
   });
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const mediaType = movie.media_type || (movie.title ? 'movie' : 'tv');
 
@@ -120,12 +121,22 @@ const MovieCard = ({ movie, onAuthRequired }) => {
         </div>
       )}
 
-      <img
-        src={getImageUrl(movie.poster_path)}
-        alt={movie.title || movie.name}
-        className="movie-poster"
-        loading="lazy"
-      />
+      {!imageError ? (
+        <img
+          src={getImageUrl(movie.poster_path)}
+          alt={movie.title || movie.name}
+          className="movie-poster"
+          loading="lazy"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <div className="movie-poster-placeholder">
+          <div className="placeholder-content">
+            <Star size={24} />
+            <span>No Image</span>
+          </div>
+        </div>
+      )}
 
       <div className="movie-info">
         <h3 className="movie-title">{movie.title || movie.name}</h3>
@@ -141,8 +152,8 @@ const MovieCard = ({ movie, onAuthRequired }) => {
           )}
         </div>
         {movie.genre_ids && movie.genre_ids.length > 0 && (
-          <div className="movie-genre">
-            {getGenreName(movie.genre_ids[0])}
+          <div className="movie-genres">
+            {movie.genre_ids.map(genreId => getGenreName(genreId)).join(' • ')}
           </div>
         )}
         {itemStatus.isWatched && (
